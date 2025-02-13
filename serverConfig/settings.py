@@ -177,7 +177,7 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-  'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+  'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
   'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
   'ROTATE_REFRESH_TOKENS': False,
   'BLACKLIST_AFTER_ROTATION': True,
@@ -235,7 +235,7 @@ DJOSER = {
     
     "SERIALIZERS": {
         "user_create": "accounts.serializers.UserCreateSerializer",
-        # "user": "accounts.serializers.UserSerializer",
+        "user": "accounts.serializers.UserSerializer",
         "current_user": "accounts.serializers.UserSerializer",
         "user_delete": "accounts.serializers.UserSerializer",
     },
