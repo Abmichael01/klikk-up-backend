@@ -25,13 +25,13 @@ SECRET_KEY = 'django-insecure-^#5m^owy^$jnqt6ac=!lyqnsrq3lm)a^2yxf+h6n_^)xs@s*@f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".vercel.app"]
+ALLOWED_HOSTS = [".vercel.app", "127.0.0.1", "localhost"]
 
 
 # Installed Apps
 
 DJANGO_APPS = [
-    "whitenoise.runserver_nostatic"
+    "whitenoise.runserver_nostatic",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -234,10 +234,12 @@ DJOSER = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://klikk-up-backend.vercel.app"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "https://klikk-up-backend.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True  
