@@ -245,14 +245,12 @@ DJOSER = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://klikk-up-backend.vercel.app",
-    "https://klikk-up.vercel.app/",
+    "https://klikk-up.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
-    "https://klikk-up-backend.vercel.app",
-    "https://klikk-up.vercel.app/",
+    "https://klikk-up.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True  
