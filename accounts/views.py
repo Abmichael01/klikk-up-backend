@@ -9,6 +9,7 @@ from django.middleware.csrf import get_token
 from django.contrib.auth import get_user_model
 from .serializers import UserCreateSerializer, UserSerializer
 from rest_framework import generics
+from django.conf import settings
 
 User = get_user_model()
 
@@ -34,20 +35,20 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
         # Set Access Token in HTTP-only cookie
         response.set_cookie(
-            key='access_token',
-            value=tokens['access'],
-            httponly=True,
-            secure=True,  # Set to False for local testing
-            samesite='Lax',
+            key = settings.SIMPLE_JWT['AUTH_COOKIE'],
+            value = tokens['access'],
+            httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'], 
+            samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
         )
 
         # Set Refresh Token in HTTP-only cookie
         response.set_cookie(
-            key='refresh_token',
-            value=tokens['refresh'],
-            httponly=True,
-            secure=True,  # Set to False for local testing
-            samesite='Lax',
+            key = settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
+            value = tokens['refresh'],
+            httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'], 
+            samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
         )
 
         return response

@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-^#5m^owy^$jnqt6ac=!lyqnsrq3lm)a^2yxf+h6n_^)xs@s*@f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".vercel.app", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [".vercel.app", "127.0.0.1", "localhost",]
 
 
 # Installed Apps
@@ -107,9 +107,7 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('POSTGRES_HOST'),  # Remote host
-        'OPTIONS': {
-            'sslmode': 'require',  # Required for Supabase
-        }
+        
     }
 }
 
@@ -202,11 +200,12 @@ SIMPLE_JWT = {
   'JTI_CLAIM': 'jti',
 
   'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-  'SLIDING_TOKEN_LIFETIME': timedelta(minutes=1),
-  'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(minutes=2),
+  'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+  'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 
   # custom
-  'AUTH_COOKIE': 'access_token',  # Cookie name. Enables cookies if value is set.
+  'AUTH_COOKIE': 'access_token', 
+  "AUTH_COOKIE_REFRESH": "refresh_token",
   'AUTH_COOKIE_DOMAIN': None,     # A string like "example.com", or None for standard domain cookie.
   'AUTH_COOKIE_SECURE': True,    # Whether the auth cookies should be secure (https:// only).
   'AUTH_COOKIE_HTTP_ONLY' : True, # Http only cookie flag.It's not fetch by javascript.
@@ -235,7 +234,7 @@ DJOSER = {
     
     "SERIALIZERS": {
         "user_create": "accounts.serializers.UserCreateSerializer",
-        "user": "accounts.serializers.UserSerializer",
+        # "user": "accounts.serializers.UserSerializer",
         "current_user": "accounts.serializers.UserSerializer",
         "user_delete": "accounts.serializers.UserSerializer",
     },
@@ -254,8 +253,3 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True  
-
-CSRF_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = True
