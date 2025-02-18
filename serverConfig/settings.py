@@ -172,6 +172,8 @@ REST_FRAMEWORK = {
   ),
 }
 
+CSRF_COOKIE_NAME = "csrftoken"
+
 
 from datetime import timedelta
 SIMPLE_JWT = {
@@ -199,9 +201,9 @@ SIMPLE_JWT = {
 
   'JTI_CLAIM': 'jti',
 
-  'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-  'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-  'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+#   'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+#   'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+#   'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 
   # custom
   'AUTH_COOKIE': 'access_token', 
@@ -234,22 +236,30 @@ DJOSER = {
     
     "SERIALIZERS": {
         "user_create": "accounts.serializers.UserCreateSerializer",
-        # "user": "accounts.serializers.UserSerializer",
+        "user": "accounts.serializers.UserSerializer",
         "current_user": "accounts.serializers.UserSerializer",
         "user_delete": "accounts.serializers.UserSerializer",
     },
 }
 
 
-
+# CORS CONFIG
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://klikk-up.vercel.app",
 ]
+CORS_ALLOW_CREDENTIALS = True
 
+
+# CSRF CONFIG
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://klikk-up.vercel.app",
 ]
 
-CORS_ALLOW_CREDENTIALS = True  
+
+CSRF_COOKIE_SAMESITE = "None"  # ✅ Allows cross-site usage
+CSRF_COOKIE_HTTPONLY = False   # ✅ Allows JavaScript to read it
+CSRF_COOKIE_SECURE = True      # ✅ Must be true if using HTTPS
+
+

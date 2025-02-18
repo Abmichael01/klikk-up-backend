@@ -25,40 +25,49 @@ class CookieTokenObtainPairView(TokenObtainPairView):
         response = super().post(request, *args, **kwargs)
         tokens = response.data
 
-        # Get the authenticated user
         user = self.user_lookup(request)
-        
+
+        if not user:
+            return Response({"error": "User not found"}, status=400)
+
         response = Response({
             "user": UserSerializer(user).data,
-            "message": "You account has been created successflully, Login to continue"
+            "message": "Your account has been created successfully. Login to continue."
         }, status=200)
+        
+        csrf_token = get_token(request)
 
         # Set Access Token in HTTP-only cookie
         response.set_cookie(
-            key = settings.SIMPLE_JWT['AUTH_COOKIE'],
-            value = tokens['access'],
-            httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-            secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'], 
-            samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+            value=tokens['access'],
+            httponly=True,
+            secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE'),
+            samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE')
         )
 
         # Set Refresh Token in HTTP-only cookie
         response.set_cookie(
-            key = settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
-            value = tokens['refresh'],
-            httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-            secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'], 
-            samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
+            value=tokens['refresh'],
+            httponly=True,
+            secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE'),
+            samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE',)
         )
+        
+        # response.set_cookie(
+        #     key="csrf_token",
+        #     value=csrf_token,
+        #     httponly=False,  # CSRF token must be accessible by frontend JavaScript
+        #     secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE'),
+        #     samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE')
+        # )
 
         return response
 
     def user_lookup(self, request):
-        username = request.data.get("username") 
-        try:
-            return User.objects.get(username=username)
-        except User.DoesNotExist:
-            return None
+        username = request.data.get("username")
+        return User.objects.filter(username=username).first()
 
 class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
@@ -73,12 +82,12 @@ class CookieTokenRefreshView(TokenRefreshView):
         # If refresh is successful, set the new access token in cookies
         if 'access' in response.data:
             response.set_cookie(
-                key='access_token',
-                value=response.data['access'],
-                httponly=True,
-                secure=False,  # Set to True in production
-                samesite='Lax',
-            )
+            key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+            value=response.data['access'],
+            httponly=True,
+            secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE'),
+            samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE')
+        )
 
         return response
 
