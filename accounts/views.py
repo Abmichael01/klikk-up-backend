@@ -2,21 +2,37 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from django.middleware.csrf import get_token
 from django.contrib.auth import get_user_model
-from .serializers import UserCreateSerializer, UserSerializer
+from .serializers import UserCreateSerializer, UserSerializer, UserUpdateSerializer
 from rest_framework import generics
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
+
+
+class IsAdminUser(BasePermission):
+    """
+    Custom permission to only allow admin users to edit user details.
+    """
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.is_admin)
+
+class UserUpdateView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserUpdateSerializer
+    permission_classes = [IsAdminUser]
+    lookup_field = "id"  # Update users based on their ID
+
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
-        
-
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     permission_classes = [AllowAny]
@@ -55,13 +71,6 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE',)
         )
         
-        # response.set_cookie(
-        #     key="csrf_token",
-        #     value=csrf_token,
-        #     httponly=False,  # CSRF token must be accessible by frontend JavaScript
-        #     secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE'),
-        #     samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE')
-        # )
 
         return response
 

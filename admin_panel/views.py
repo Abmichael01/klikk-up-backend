@@ -43,18 +43,22 @@ class CouponView(generics.ListCreateAPIView):
         return Response({"data": serializer.data, "message": "Coupons created successfully"}, status=status.HTTP_201_CREATED)
     
 class TaskListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAdminUser]
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
     
 class TaskUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminUser]
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
     
 class StoryListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAdminUser]
     serializer_class = StorySerializer
     queryset = Story.objects.all()
 
 class StoryUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminUser]
     serializer_class = StorySerializer
     queryset = Story.objects.all()
     
