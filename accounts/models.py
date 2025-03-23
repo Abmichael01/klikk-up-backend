@@ -28,9 +28,16 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, unique=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+
+    referred_by = models.ForeignKey(
+        'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='referrals'
+    )
+
+    point_balance = models.PositiveIntegerField(default=0)
 
     objects = CustomUserManager()
 
@@ -51,3 +58,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+    def reward_referrer(self, points=100):
+        if self.referred_by:
+            self.referred_by.point_balance += points
+            self.referred_by.save()
+        self.point_balance += points
+        self.save()
+
+    def total_referral_points(self, points_per_referral=100):
+        return self.referrals.count() * points_per_referral
+

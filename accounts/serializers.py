@@ -7,13 +7,17 @@ User = get_user_model()
 
 class UserCreateSerializer(DjoserUserCreateSerializer):
     coupon = serializers.CharField(write_only=True, required=True)
+    ref_code = serializers.CharField(write_only=True, required=False)
     is_admin = serializers.BooleanField(write_only=True, required=False)
     is_staff = serializers.BooleanField(write_only=True, required=False)
     is_superuser = serializers.BooleanField(write_only=True, required=False)
 
     class Meta(DjoserUserCreateSerializer.Meta):
         model = User
-        fields = ["id", "email", "username", "password", "coupon", "is_admin", "is_staff", "is_superuser"]
+        fields = [
+            "id", "email", "username", "password", "coupon", "ref_code",
+            "is_admin", "is_staff", "is_superuser", "point_balance"
+        ]
 
     def validate_coupon(self, value):
         try:
@@ -21,6 +25,12 @@ class UserCreateSerializer(DjoserUserCreateSerializer):
         except Coupon.DoesNotExist:
             raise serializers.ValidationError("Invalid or already used coupon code")
         return coupon
+
+    def validate_ref_code(self, value):
+        try:
+            return User.objects.get(username=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid or non-existent referral code")
 
     def validate(self, attrs):
         request = self.context.get("request")
@@ -33,11 +43,24 @@ class UserCreateSerializer(DjoserUserCreateSerializer):
 
     def create(self, validated_data):
         coupon = validated_data.pop("coupon")
+        referrer = validated_data.pop("ref_code", None)
+
         user = super().create(validated_data)
+
+        # Assign referral if exists
+        if referrer:
+            user.referred_by = referrer
+            user.save()
+            user.reward_referrer()
+
+        # Mark coupon as used
         coupon.user = user
         coupon.used = True
         coupon.save()
+
         return user
+
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:

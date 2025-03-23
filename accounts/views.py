@@ -30,6 +30,10 @@ class UserUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAdminUser]
     lookup_field = "id"  # Update users based on their ID
 
+class UserDeleteView(generics.DestroyAPIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+    lookup_field = "id"  # Delete users based on their ID
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer

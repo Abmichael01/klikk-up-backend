@@ -8,4 +8,5 @@ urlpatterns = [
     path('token/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view()),
     path("users/<int:id>/update/", UserUpdateView.as_view(), name="user-update"),
+    path("users/<int:id>/delete/", UserDeleteView.as_view(), name="user-delete"),
 ]
