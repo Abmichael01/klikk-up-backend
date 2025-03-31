@@ -79,28 +79,85 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class UserSerializer(DjoserUserSerializer):
     roles = serializers.SerializerMethodField()
+    current_level = serializers.SerializerMethodField()
+    current_level_xp = serializers.SerializerMethodField()
+    xp_in_level = serializers.SerializerMethodField()
+    next_level = serializers.SerializerMethodField()
+    next_level_xp = serializers.SerializerMethodField()
+    xp_remaining = serializers.SerializerMethodField()
+    percent_xp_in_level = serializers.SerializerMethodField()
+    total_referrals = serializers.SerializerMethodField()
 
     class Meta(DjoserUserSerializer.Meta):
         model = User
-        fields = ["id", "username", "email", "roles", "is_admin", "is_staff", "is_superuser"]
+        fields = [
+            "id", 
+            "username",
+            "email",
+            "roles", 
+            "is_admin", 
+            "is_staff", 
+            "is_superuser",
+            "point_balance",
+            "referred_by",
+            "xp",
+            "point_balance",
+            "current_level",
+            "current_level_xp",
+            "next_level",
+            "next_level_xp",
+            "xp_remaining",
+            "xp_in_level",
+            "percent_xp_in_level",
+            "total_referrals",
+        ]
+        
+    def get_current_level(self, obj):
+        """Calculate level dynamically."""
+        return obj.calculate_level()
+    
+    def get_current_level_xp(self, obj):
+        """Total XP required to reach the next level."""
+        return obj.xp_for_level(obj.calculate_level()) 
+        
+    def get_xp_in_level(self, obj):
+        """XP needed to reach the next level."""
+        return obj.xp - obj.xp_for_level(obj.calculate_level()) 
 
+    def get_next_level(self, obj):
+        """The next level the user is aiming for."""
+        return obj.calculate_level() + 1  
+
+    def get_next_level_xp(self, obj):
+        """Total XP required to reach the next level."""
+        return obj.xp_for_level(obj.calculate_level() + 1)  
+     
+    def get_xp_remaining(self, obj):
+        """XP remaining to reach the next level."""
+        return obj.xp_to_next_level()
+    
+    def get_percent_xp_in_level(self, obj):
+        """Percentage of XP in the current level."""
+        return round(((obj.xp - obj.xp_for_level(obj.calculate_level()) ) / (obj.xp_for_level(obj.calculate_level() + 1) - obj.xp_for_level(obj.calculate_level()))) * 100, 2) 
+
+    def get_total_referrals(self, obj):
+        """Return total referrals."""
+        return User.objects.filter(referred_by=obj).count()
+    
     def get_roles(self, obj):
-        roles = []
+        """Return role IDs based on user type."""
         if obj.is_admin:
-            roles = [1, 2, 3]  # Admin has all roles
+            return [1, 2, 3]  # Admin has all roles
         elif obj.is_staff:
-            roles = [2, 3]  # Staff has staff and normal user roles
-        else:
-            roles = [3]  # Normal user role only
-        return roles
+            return [2, 3]  # Staff has staff and normal user roles
+        return [3]  # Normal user role only
 
     def to_representation(self, instance):
+        """Hide admin fields for non-admin users."""
         ret = super().to_representation(instance)
         request = self.context.get("request")
         if not request or not request.user.is_authenticated or not request.user.is_admin:
-            # Remove admin-specific fields for non-admin users
             ret.pop("is_admin", None)
             ret.pop("is_staff", None)
             ret.pop("is_superuser", None)
         return ret
-

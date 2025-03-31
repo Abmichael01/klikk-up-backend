@@ -28,26 +28,22 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, unique=True)
-
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-
+    point_balance = models.PositiveIntegerField(default=0) 
+    xp = models.PositiveIntegerField(default=0)  # Store XP only
     referred_by = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='referrals'
     )
 
-    point_balance = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
 
-    def get_full_name(self):
-        return f"{self.first_name} - {self.last_name}"
-
-    def get_short_name(self):
+    def __str__(self):
         return self.username
 
     def has_perm(self, perm, obj=None):
@@ -56,10 +52,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return True
 
-    def __str__(self):
-        return self.username
-
     def reward_referrer(self, points=100):
+        """Reward the referrer and user with points."""
         if self.referred_by:
             self.referred_by.point_balance += points
             self.referred_by.save()
@@ -67,5 +61,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.save()
 
     def total_referral_points(self, points_per_referral=100):
+        """Calculate total points from referrals."""
         return self.referrals.count() * points_per_referral
 
+    def calculate_level(self):
+        """Calculate level dynamically based on XP."""
+        return int((self.xp ** 0.5) // 10 + 1)
+
+    def xp_for_level(self, level):
+        """Calculate XP required to reach a given level."""
+        return ((level - 1) * 10) ** 2
+
+    def xp_to_next_level(self):
+        """Calculate the XP required to reach the next level."""
+        next_level = self.calculate_level() + 1  # Fix: Use `calculate_level()` instead of `self.level`
+        return self.xp_for_level(next_level) - self.xp
+
+    def add_xp(self, amount):
+        """Add XP and save, without storing level."""
+        self.xp += amount
+        self.save()
