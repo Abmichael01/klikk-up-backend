@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from admin_panel.models import Task, Activity
 
 User = get_user_model()
 
@@ -20,11 +21,20 @@ class ReferralsDataSerializer(serializers.ModelSerializer):
     ref_code = serializers.SerializerMethodField()
     leaderboard = serializers.SerializerMethodField()
     rank = serializers.SerializerMethodField()
+    percentage_rank = serializers.SerializerMethodField()
 
 
     class Meta:
         model = User
-        fields = ["total_referrals", "referrals", "points_earned", "rank", "ref_code", "leaderboard"]
+        fields = [ 
+                  "total_referrals", 
+                  "referrals", 
+                  "points_earned", 
+                  "rank", 
+                  "ref_code", 
+                  "leaderboard",
+                  "percentage_rank",
+                ]
 
     def get_points_earned(self, obj):
         """Calculate points earned from referrals using total_referral_points method."""
@@ -57,3 +67,19 @@ class ReferralsDataSerializer(serializers.ModelSerializer):
             referral_count=Count("referrals")
         ).filter(referral_count__gt=user_referral_count).count() + 1
         return rank
+    
+    def get_percentage_rank(self, obj):
+        """Calculate the user's percentage rank."""
+        total_users = User.objects.count()
+        if total_users == 0:
+            return 0  # Avoid division by zero
+        user_rank = self.get_rank(obj)
+        percentage_rank = ((total_users - user_rank + 1) / total_users) * 100
+        return round(percentage_rank, 2)
+
+class TaskSerializer(serializers.ModelSerializer):
+    """Serializer for individual tasks."""
+    class Meta:
+        model = Task
+        fields = ["id", "title", "link", "reward", "estimated_time"]
+
