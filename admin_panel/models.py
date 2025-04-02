@@ -39,9 +39,27 @@ class Activity(models.Model):
     activity_type = models.CharField(max_length=10, choices=ACTIVITY_TYPE_CHOICES)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True)
     story = models.ForeignKey(Story, on_delete=models.CASCADE, null=True, blank=True)
-    points_earned = models.IntegerField(default=0)
-    xp = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        """Override save method to update user fields."""
+        # Fixed XP for every activity
+        FIXED_XP = 10
+
+        # Add XP to the user
+        self.user.add_xp(FIXED_XP)
+
+        # Add points based on the activity type
+        if self.activity_type == 'task' and self.task:
+            self.user.point_balance += self.task.reward
+        elif self.activity_type == 'story' and self.story:
+            self.user.point_balance += self.story.reward
+
+        # Save the updated user fields
+        self.user.save()
+
+        # Call the original save method
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.user.username} - {self.activity_type} - {self.points_earned} points"
+        return f"{self.user.username} - {self.activity_type} - {self.task.reward if self.task else self.story.reward} points"

@@ -8,9 +8,11 @@ from rest_framework.decorators import api_view
 from django.middleware.csrf import get_token
 from django.contrib.auth import get_user_model
 from .serializers import UserCreateSerializer, UserSerializer, UserUpdateSerializer
-from rest_framework import generics
+from rest_framework import generics, status
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from rest_framework.authtoken.models import Token
+
 
 User = get_user_model()
 
@@ -105,25 +107,27 @@ class CookieTokenRefreshView(TokenRefreshView):
         return response
 
 
-
 class LogoutView(APIView):
+    """Logs out the user by blacklisting their refresh token."""
     permission_classes = [IsAuthenticated]
 
-    @csrf_exempt
-    def post(self, request):
-        refresh_token = request.COOKIES.get("refresh_token")
-        if not refresh_token:
-            return Response({"error": "Refresh token not found."}, status=400)
-        
-        # Logout by invalidating the refresh token
+    def post(self, request, *args, **kwargs):
         try:
-            refresh = RefreshToken(refresh_token)
-            refresh.blacklist()
+            # Get the refresh token from cookies
+            refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+            print(refresh_token)
+            if not refresh_token:
+                return Response({"error": "Refresh token not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Blacklist the refresh token
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            # Clear the cookies
+            response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
+            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+
+            return response
         except Exception as e:
-            return Response({"error": "Error invalidating tokens" + str(e)}, status=500)
-        
-        # Delete cookies
-        response = Response({"success": "Logout successful"})
-        response.delete_cookie("access_token")
-        response.delete_cookie("refresh_token")
-        return response
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

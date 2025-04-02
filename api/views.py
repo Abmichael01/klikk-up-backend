@@ -7,8 +7,10 @@ from django.contrib.auth import get_user_model
 from .serializers import ReferralsDataSerializer
 from .serializers import TaskSerializer
 from admin_panel.models import Task, Activity
+from django.contrib.auth import logout
 
-User = get_user_model()
+
+User = get_user_model() 
 
 class UserReferralsView(RetrieveAPIView):
     """Returns the referral details of the logged-in user"""
@@ -24,31 +26,57 @@ class TasksView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        """
-        completed_tasks
-        available_tasks
-        points_earned
-        """
         tasks = Task.objects.all()
         activities = Activity.objects.filter(user=request.user)
         completed_tasks = []
         available_tasks = []
+        points_earned = 0
         
         for task in tasks:
             activity = activities.filter(task=task).first()
             serializer = TaskSerializer(task)
-            points_earned = 0
             if activity:
+                
                 completed_tasks.append(serializer.data)
-                points_earned += activity.points_earned
+                points_earned += activity.task.reward
             else:
                 available_tasks.append(serializer.data)
                 
         data = {
             "completed_tasks": completed_tasks,
             "available_tasks": available_tasks,
-            "points_earned": 0,
+            "points_earned": points_earned,
         }
         
         return Response(data, status=status.HTTP_200_OK)
+
+class ConfirmTaskView(APIView):
+    """Confirm a task completion."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        task_id = request.data.get("id")
+        confirmation_code = request.data.get("confirmation_code")
+        
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        activity = Activity.objects.filter(user=request.user, task=task).first()
+        if activity:
+            return Response({"error": "Task already confirmed"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if task.confirmation_code == confirmation_code:
+            activity = Activity.objects.create(
+                user=request.user,
+                activity_type="task",
+                task=task
+            )
+            activity.save()
+            
+            return Response({"message": "Task confirmed successfully"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Invalid confirmation code"}, status=status.HTTP_400_BAD_REQUEST)
 
