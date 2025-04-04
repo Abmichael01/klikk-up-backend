@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db.models import Count
-from admin_panel.models import Task, Activity
+from admin_panel.models import Task, Activity, Story
 
 User = get_user_model()
 
@@ -83,3 +83,14 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ["id", "title", "link", "reward", "estimated_time"]
 
+class StorySerializer(serializers.ModelSerializer):
+    """Serializer for individual tasks."""
+    class Meta:
+        model = Story
+        fields = [
+            "id", 
+            "title", 
+            "body", 
+            "reward", 
+            "estimated_time",
+            ]
