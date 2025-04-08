@@ -84,7 +84,9 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "link", "reward", "estimated_time"]
 
 class StorySerializer(serializers.ModelSerializer):
-    """Serializer for individual tasks."""
+    """Serializer for individual stories."""
+    story_read = serializers.SerializerMethodField()
+
     class Meta:
         model = Story
         fields = [
@@ -93,4 +95,11 @@ class StorySerializer(serializers.ModelSerializer):
             "body", 
             "reward", 
             "estimated_time",
-            ]
+            "story_read",
+        ]
+
+    def get_story_read(self, obj):
+        """Check if the story has been read by the user."""
+        user = self.context['request'].user
+        activity = Activity.objects.filter(user=user, story=obj).first()
+        return activity is not None if activity else False

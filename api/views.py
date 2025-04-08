@@ -22,7 +22,6 @@ class UserReferralsView(RetrieveAPIView):
 
 class TasksView(APIView):
     """Returns task-related data for users to view."""
-    serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -34,9 +33,8 @@ class TasksView(APIView):
         
         for task in tasks:
             activity = activities.filter(task=task).first()
-            serializer = TaskSerializer(task)
+            serializer = TaskSerializer(task, context={"request": request})  # Pass context
             if activity:
-                
                 completed_tasks.append(serializer.data)
                 points_earned += activity.task.reward
             else:
@@ -83,8 +81,7 @@ class ConfirmTaskView(APIView):
 
 
 class StoriesView(APIView):
-    """Returns task-related data for users to view."""
-    serializer_class = StorySerializer
+    """Returns story-related data for users to view."""
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -96,7 +93,7 @@ class StoriesView(APIView):
         
         for story in stories:
             activity = activities.filter(story=story).first()
-            serializer = StorySerializer(story)
+            serializer = StorySerializer(story, context={"request": request})  # Pass context
             if activity:
                 stories_read.append(serializer.data)
                 points_earned += activity.story.reward
@@ -143,4 +140,3 @@ class ConfirmStoryView(APIView):
         activity.save()
         
         return Response({"message": "The story has been confirmed"}, status=status.HTTP_200_OK)
-        
