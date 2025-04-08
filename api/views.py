@@ -13,7 +13,6 @@ from django.contrib.auth import logout
 User = get_user_model() 
 
 class UserReferralsView(RetrieveAPIView):
-    """Returns the referral details of the logged-in user"""
     serializer_class = ReferralsDataSerializer
     permission_classes = [IsAuthenticated]
 
