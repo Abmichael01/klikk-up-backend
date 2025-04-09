@@ -11,7 +11,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 class BankDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
-        fields = ['bank_name', 'account_name', 'account_number']
+        fields = ['bank_name', 'bank_code', 'account_name', 'account_number']
 
 class WalletSerializer(serializers.ModelSerializer):
     transactions = TransactionSerializer(many=True, read_only=True)

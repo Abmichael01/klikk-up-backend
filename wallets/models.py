@@ -10,6 +10,7 @@ class Wallet(models.Model):
     )
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     bank_name = models.CharField(max_length=255, blank=True, null=True)
+    bank_code = models.CharField(max_length=255, blank=True, null=True)
     account_name = models.CharField(max_length=255, blank=True, null=True)
     account_number = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
