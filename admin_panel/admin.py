@@ -4,3 +4,5 @@ from . models import *
 
 
 admin.site.register(Coupon)
+admin.site.register(Task)
+admin.site.register(Story)

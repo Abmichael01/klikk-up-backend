@@ -48,7 +48,8 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     "accounts",
     "api",
-    "admin_panel"
+    "admin_panel",
+    "wallets"
 ]
 
 THIRD_PARTY_APPS = [
