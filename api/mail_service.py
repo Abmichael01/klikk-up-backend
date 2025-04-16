@@ -24,12 +24,12 @@ def send_coupon_email(username, email, coupon_code):
 
     {coupon_code}
 
-    Use it to signup here: https://yourwebsite.com/signup
+    Use it to signup here: https://klikk-up.vercel.app/auth/register?coupon_code={coupon_code}
 
     Thanks,
     Your Brand
     """
 
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-    msg.attach_alternative(html_content, "text/html")
+    # msg.attach_alternative(html_content, "text/html")
     msg.send()
