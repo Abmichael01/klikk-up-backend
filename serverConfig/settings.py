@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-^#5m^owy^$jnqt6ac=!lyqnsrq3lm)a^2yxf+h6n_^)xs@s*@f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".vercel.app", "127.0.0.1", "localhost",]
+ALLOWED_HOSTS = [".vercel.app", "127.0.0.1", "localhost", "14f2-129-222-206-146.ngrok-free.app",]
 
 
 # Installed Apps
@@ -78,6 +78,9 @@ MIDDLEWARE = [
 AUTH_USER_MODEL = "accounts.User"
 
 ROOT_URLCONF = 'serverConfig.urls'
+
+PAYSTACK_SECRET_KEY = "sk_test_bacb546c151e18d44f3f4aa17a98aec6379b3c55"
+PAYSTACK_PUBLIC_KEY = "pk_test_c62cbab230a3fb298e6de1b6af3e3a4bd346991c"
 
 TEMPLATES = [
     {
