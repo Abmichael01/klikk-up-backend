@@ -5,7 +5,7 @@ from django.conf import settings
 
 def send_coupon_email(username, email, coupon_code):
     subject = 'Your Coupon Code is Ready!'
-    from_email = settings.EMAIL_HOST_USER
+    from_email = "klikkuphelp@gmail.com"
     to_email = email
 
     context = {
