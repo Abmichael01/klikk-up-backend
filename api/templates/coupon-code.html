@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Registration Coupon Code</title>
+  <title>Your Signup Code for KlikkUp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="margin:0; padding:0; background-color:#f8fafc; font-family: Arial, sans-serif; color:#111111;">
 
   <!-- Hidden preview text -->
   <div style="display:none; font-size:1px; color:#f8fafc; line-height:1px; max-height:0px; max-width:0px; opacity:0; overflow:hidden;">
-    Your registration code has arrived — use it to sign up!
+    Your signup code for KlikkUp.
   </div>
 
   <!-- Wrapper -->
@@ -23,35 +23,40 @@
             <td style="padding:32px;">
 
               <!-- Header -->
-              <h1 style="font-size:24px; margin:0 0 16px 0; color:#111111;">🎉 Your Signup Code is Here!</h1>
+              <h1 style="font-size:22px; margin:0 0 16px 0; color:#111111;">Complete Your Registration</h1>
 
-              <!-- Description -->
-              <p style="font-size:16px; margin:0 0 24px 0; line-height:1.5; color:#333333;">
-                Thank you for purchasing your registration code! Below is your unique access code, required to complete your signup on our platform.
+              <!-- Greeting -->
+              <p style="font-size:16px; margin:0 0 16px 0; line-height:1.5; color:#333333;">
+                Hello {{ username }},
               </p>
 
-              <!-- Coupon Code Display -->
+              <!-- Instruction -->
+              <p style="font-size:16px; margin:0 0 24px 0; line-height:1.5; color:#333333;">
+                To complete your registration on <strong>KlikkUp</strong>, please use the signup code provided below:
+              </p>
+
+              <!-- Signup Code Display -->
               <div style="background-color:#f1f5f9; padding:16px; border-radius:4px; text-align:center; font-size:20px; font-weight:bold; color:#1d4ed8; letter-spacing:1px; margin-bottom:24px;">
-                COUPON2025
+                {{ coupon_code }}
               </div>
 
-              <!-- Instructions -->
-              <p style="font-size:16px; margin:0 0 24px 0; line-height:1.5; color:#333333;">
-                To proceed, visit our signup page and enter this code when prompted. This will unlock access to create your account.
-              </p>
-
-              <!-- Call to Action -->
+              <!-- CTA Button -->
               <div style="text-align:center;">
-                <a href="https://yourwebsite.com/signup" target="_blank" rel="noopener noreferrer"
+                <a href="{{ signup_url }}" target="_blank" rel="noopener noreferrer"
                    style="background-color:#2563eb; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:4px; display:inline-block; font-size:16px;">
-                  Go to Signup
+                  Complete Registration
                 </a>
               </div>
 
-              <!-- Support -->
+              <!-- Footer -->
               <p style="font-size:14px; color:#555555; margin:24px 0 0 0; line-height:1.4;">
-                If you have any issues or didn’t request this, please
-                <a href="mailto:support@yourwebsite.com" style="color:#1d4ed8; text-decoration:underline;">contact our support team</a>.
+                If you didn’t request this or need assistance, please
+                <a href="mailto:support@klikkup.com" style="color:#1d4ed8; text-decoration:underline;">contact support</a>.
+              </p>
+
+              <!-- Footer Year -->
+              <p style="font-size:14px; color:#aaa; margin:10px 0 0 0;">
+                &copy; {{ year }} KlikkUp. All Rights Reserved.
               </p>
 
             </td>
