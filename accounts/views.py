@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from django.middleware.csrf import get_token
 from django.contrib.auth import get_user_model
-from .serializers import UserCreateSerializer, UserSerializer, UserUpdateSerializer
+from .serializers import AccountOverviewSerializer, UserCreateSerializer, UserSerializer, UserUpdateSerializer
 from rest_framework import generics, status
 from django.conf import settings
 from django.shortcuts import get_object_or_404
@@ -131,3 +131,14 @@ class LogoutView(APIView):
             return response
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class AccountOverviewView(generics.RetrieveAPIView):
+    """
+    Retrieve authenticated user's account overview.
+    """
+    serializer_class = AccountOverviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        """Return the authenticated user."""
+        return self.request.user

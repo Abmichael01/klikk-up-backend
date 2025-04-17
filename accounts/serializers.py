@@ -1,7 +1,12 @@
 from djoser.serializers import UserCreateSerializer as DjoserUserCreateSerializer, UserSerializer as DjoserUserSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from admin_panel.models import Coupon
+from admin_panel.models import Coupon, Activity, DailyCheckIn
+from django.utils import timezone
+from django.db.models import Sum, Case, When, F
+from _utils import format_time_since
+from django.template.defaultfilters import timesince
+
 
 User = get_user_model()
 
@@ -79,14 +84,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class UserSerializer(DjoserUserSerializer):
     roles = serializers.SerializerMethodField()
-    current_level = serializers.SerializerMethodField()
-    current_level_xp = serializers.SerializerMethodField()
-    xp_in_level = serializers.SerializerMethodField()
-    next_level = serializers.SerializerMethodField()
-    next_level_xp = serializers.SerializerMethodField()
-    xp_remaining = serializers.SerializerMethodField()
-    percent_xp_in_level = serializers.SerializerMethodField()
-    total_referrals = serializers.SerializerMethodField()
 
     class Meta(DjoserUserSerializer.Meta):
         model = User
@@ -98,52 +95,8 @@ class UserSerializer(DjoserUserSerializer):
             "is_admin", 
             "is_staff", 
             "is_superuser",
-            "point_balance",
-            "referred_by",
-            "xp",
-            "point_balance",
-            "current_level",
-            "current_level_xp",
-            "next_level",
-            "next_level_xp",
-            "xp_remaining",
-            "xp_in_level",
-            "percent_xp_in_level",
-            "total_referrals",
         ]
         
-    def get_current_level(self, obj):
-        """Calculate level dynamically."""
-        return obj.calculate_level()
-    
-    def get_current_level_xp(self, obj):
-        """Total XP required to reach the next level."""
-        return obj.xp_for_level(obj.calculate_level()) 
-        
-    def get_xp_in_level(self, obj):
-        """XP needed to reach the next level."""
-        return obj.xp - obj.xp_for_level(obj.calculate_level()) 
-
-    def get_next_level(self, obj):
-        """The next level the user is aiming for."""
-        return obj.calculate_level() + 1  
-
-    def get_next_level_xp(self, obj):
-        """Total XP required to reach the next level."""
-        return obj.xp_for_level(obj.calculate_level() + 1)  
-     
-    def get_xp_remaining(self, obj):
-        """XP remaining to reach the next level."""
-        return obj.xp_to_next_level()
-    
-    def get_percent_xp_in_level(self, obj):
-        """Percentage of XP in the current level."""
-        return round(((obj.xp - obj.xp_for_level(obj.calculate_level()) ) / (obj.xp_for_level(obj.calculate_level() + 1) - obj.xp_for_level(obj.calculate_level()))) * 100, 2) 
-
-    def get_total_referrals(self, obj):
-        """Return total referrals."""
-        return User.objects.filter(referred_by=obj).count()
-    
     def get_roles(self, obj):
         """Return role IDs based on user type."""
         if obj.is_admin:
@@ -161,3 +114,129 @@ class UserSerializer(DjoserUserSerializer):
             ret.pop("is_staff", None)
             ret.pop("is_superuser", None)
         return ret
+
+class RecentActivitiesSerializer(serializers.ModelSerializer):
+    reward = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
+    class Meta:
+        model = Activity
+        fields = ['activity_type', 'reward', 'created_at']
+
+    def get_reward(self, obj):
+        """Fetch reward based on activity type."""
+        if obj.activity_type == 'task' and obj.task:
+            return obj.task.reward
+        elif obj.activity_type == 'story' and obj.story:
+            return obj.story.reward
+        return 0
+    
+    def get_created_at(self, obj):
+        """Format the creation time into human-readable format."""
+        return format_time_since(obj.created_at)
+
+
+class AccountOverviewSerializer(serializers.ModelSerializer):
+    """Serializer for providing account overview information."""
+
+    current_level = serializers.SerializerMethodField()
+    current_level_xp = serializers.SerializerMethodField()
+    next_level = serializers.SerializerMethodField()
+    next_level_xp = serializers.SerializerMethodField()
+    xp_remaining = serializers.SerializerMethodField()
+    xp_in_level = serializers.SerializerMethodField()
+    percent_xp_in_level = serializers.SerializerMethodField()
+    total_referrals = serializers.SerializerMethodField()
+    points_earned_today = serializers.SerializerMethodField()
+    total_activities_done = serializers.SerializerMethodField()
+    recent_activities = serializers.SerializerMethodField()
+    checked_in_today = serializers.SerializerMethodField()
+    streak = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "point_balance",
+            "referred_by",
+            "xp",
+            "current_level",
+            "current_level_xp",
+            "next_level",
+            "next_level_xp",
+            "xp_remaining",
+            "xp_in_level",
+            "percent_xp_in_level",
+            "total_referrals",
+            "points_earned_today",
+            "total_activities_done",
+            "recent_activities",
+            'checked_in_today',
+            'streak',
+        ]
+
+    def get_current_level(self, obj):
+        """Calculate the user's current level."""
+        return obj.calculate_level()
+
+    def get_current_level_xp(self, obj):
+        """XP required to reach the current level."""
+        return obj.xp_for_level(obj.calculate_level())
+
+    def get_next_level(self, obj):
+        """Determine the next level the user is progressing towards."""
+        return obj.calculate_level() + 1
+
+    def get_next_level_xp(self, obj):
+        """XP required to reach the next level."""
+        return obj.xp_for_level(obj.calculate_level() + 1)
+
+    def get_xp_remaining(self, obj):
+        """XP remaining to reach the next level."""
+        return obj.xp_to_next_level()
+
+    def get_xp_in_level(self, obj):
+        """XP earned within the current level."""
+        return obj.xp - obj.xp_for_level(obj.calculate_level())
+
+    def get_percent_xp_in_level(self, obj):
+        """Percentage of XP completed within the current level."""
+        current_level = obj.calculate_level()
+        xp_for_current = obj.xp_for_level(current_level)
+        xp_for_next = obj.xp_for_level(current_level + 1)
+        return round(((obj.xp - xp_for_current) / (xp_for_next - xp_for_current)) * 100, 2)
+
+    def get_total_referrals(self, obj):
+        """Total number of referrals made by the user."""
+        return User.objects.filter(referred_by=obj).count()
+    
+    def get_points_earned_today(self, obj):
+        today = timezone.now().date()
+        points = Activity.objects.filter(user=obj, created_at__date=today).aggregate(
+            total_points=Sum(
+                Case(
+                    When(activity_type='task', then=F('task__reward')),
+                    When(activity_type='story', then=F('story__reward')),
+                    default=0
+                )
+            )
+        )['total_points'] or 0
+        return points
+
+    def get_total_activities_done(self, obj):
+        return Activity.objects.filter(
+            user=obj,
+            activity_type__in=['task', 'story']
+        ).count()
+    
+    def get_recent_activities(self, obj):
+        """Return the latest 5 activities using RecentActivitiesSerializer."""
+        recent_activities = Activity.objects.filter(user=obj).order_by('-created_at')[:5]
+        return RecentActivitiesSerializer(recent_activities, many=True).data
+    
+    def get_checked_in_today(self, obj):
+        today = timezone.now().date()
+        return DailyCheckIn.objects.filter(user=obj, date=today).exists()
+    
+    def get_streak(self, obj):
+        last_checkin = DailyCheckIn.objects.filter(user=obj).order_by('-date').first()
+        return last_checkin.streak_count if last_checkin else 0

@@ -31,5 +31,5 @@ def send_coupon_email(username, email, coupon_code):
     """
 
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-    # msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, "text/html")
     msg.send()

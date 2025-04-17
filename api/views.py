@@ -2,9 +2,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from django.contrib.auth import get_user_model
-from .serializers import ReferralsDataSerializer
+
+from api.checkin_service import perform_daily_checkin
+from .serializers import RecentActivitiesSerializer, ReferralsDataSerializer
 from .serializers import TaskSerializer, StorySerializer
 from admin_panel.models import Task, Activity, Story
 from django.contrib.auth import logout
@@ -118,7 +120,7 @@ class ConfirmStoryView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        print(request.data)
+        print(request.data["id"])
         task_id = request.data.get("id")
         
         try:
@@ -139,3 +141,11 @@ class ConfirmStoryView(APIView):
         activity.save()
         
         return Response({"message": "The story has been confirmed"}, status=status.HTTP_200_OK)
+
+
+class DailyCheckInView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        result = perform_daily_checkin(request.user)
+        return Response(result)

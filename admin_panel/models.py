@@ -63,3 +63,15 @@ class Activity(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.activity_type} - {self.task.reward if self.task else self.story.reward} points"
+    
+
+class DailyCheckIn(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='checkins')
+    date = models.DateField(auto_now_add=True)
+    streak_count = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ('user', 'date')  # Prevent multiple check-ins per day
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date} - Streak: {self.streak_count}"
