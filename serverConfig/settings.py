@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-^#5m^owy^$jnqt6ac=!lyqnsrq3lm)a^2yxf+h6n_^)xs@s*@f
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".vercel.app", "127.0.0.1", "localhost", "14f2-129-222-206-146.ngrok-free.app", 'klikkupp.com', '82.29.190.78']
+    ".vercel.app", "127.0.0.1", "localhost", "14f2-129-222-206-146.ngrok-free.app", 'klikkupp.com', '82.29.190.78', 'api.klikkupp.com']
 
 
 # Installed Apps
@@ -105,14 +105,15 @@ WSGI_APPLICATION = 'serverConfig.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DATABASE'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),  # Remote host
-        
+        'NAME': 'klikkup_db',
+        'USER': 'klikkup_user',
+        'PASSWORD': 'Ztarlord@100',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -151,7 +152,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
@@ -253,6 +254,8 @@ DJOSER = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://klikk-up.vercel.app",
+    'https://klikkupp.com',
+    'http://klikkupp.com',
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -261,6 +264,8 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://klikk-up.vercel.app",
+    'https://klikkupp.com',
+    'http://klikkupp.com',
 ]
 
 
