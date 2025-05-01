@@ -25,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^#5m^owy^$jnqt6ac=!lyqnsrq3lm)a^2yxf+h6n_^)xs@s*@f'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     ".vercel.app", "127.0.0.1", "localhost", "14f2-129-222-206-146.ngrok-free.app", 'klikkupp.com', '82.29.190.78', 'api.klikkupp.com']
@@ -80,8 +80,8 @@ AUTH_USER_MODEL = "accounts.User"
 
 ROOT_URLCONF = 'serverConfig.urls'
 
-PAYSTACK_SECRET_KEY = "sk_test_bacb546c151e18d44f3f4aa17a98aec6379b3c55"
-PAYSTACK_PUBLIC_KEY = "pk_test_c62cbab230a3fb298e6de1b6af3e3a4bd346991c"
+PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_KEY')
+PAYSTACK_PUBLIC_KEY = os.getenv('PAYSTACK_PUBLIC_KEY')
 
 TEMPLATES = [
     {
@@ -109,11 +109,11 @@ WSGI_APPLICATION = 'serverConfig.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'klikkup_db',
-        'USER': 'klikkup_user',
-        'PASSWORD': 'Ztarlord@100',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -167,8 +167,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "urkelcodes7@gmail.com"
-EMAIL_HOST_PASSWORD = "xkcj ugeb ypbw dlww"
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 
 
