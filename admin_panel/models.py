@@ -33,12 +33,14 @@ class Activity(models.Model):
     ACTIVITY_TYPE_CHOICES = [
         ('task', 'Task'),
         ('story', 'Story'),
+        ('checkin', 'Check-in'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     activity_type = models.CharField(max_length=10, choices=ACTIVITY_TYPE_CHOICES)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True)
     story = models.ForeignKey(Story, on_delete=models.CASCADE, null=True, blank=True)
+    reward = models.IntegerField(default=0)  # Points earned from the activity
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -51,9 +53,9 @@ class Activity(models.Model):
 
         # Add points based on the activity type
         if self.activity_type == 'task' and self.task:
-            self.user.point_balance += self.task.reward
+            self.user.point_balance += self.points
         elif self.activity_type == 'story' and self.story:
-            self.user.point_balance += self.story.reward
+            self.user.point_balance += self.points
 
         # Save the updated user fields
         self.user.save()

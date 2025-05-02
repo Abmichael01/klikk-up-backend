@@ -71,7 +71,8 @@ class ConfirmTaskView(APIView):
             activity = Activity.objects.create(
                 user=request.user,
                 activity_type="task",
-                task=task
+                task=task,
+                reward=task.reward
             )
             activity.save()
             
@@ -136,7 +137,8 @@ class ConfirmStoryView(APIView):
         activity = Activity.objects.create(
             user=request.user,
             activity_type="story",
-            story= story
+            story= story,
+            reward = story.reward
         )
         activity.save()
         

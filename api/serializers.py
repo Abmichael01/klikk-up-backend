@@ -105,16 +105,7 @@ class StorySerializer(serializers.ModelSerializer):
         return activity is not None if activity else False
     
 class RecentActivitiesSerializer(serializers.ModelSerializer):
-    reward = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
         fields = ['activity_type', 'reward', 'created_at']
-
-    def get_reward(self, obj):
-        """Fetch reward based on activity type."""
-        if obj.activity_type == 'task' and obj.task:
-            return obj.task.reward
-        elif obj.activity_type == 'story' and obj.story:
-            return obj.story.reward
-        return 0

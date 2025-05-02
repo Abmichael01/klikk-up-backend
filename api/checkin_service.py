@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.utils import timezone
-from admin_panel.models import DailyCheckIn
+from admin_panel.models import DailyCheckIn, Activity
 
 def perform_daily_checkin(user):
     today = timezone.now().date()
@@ -22,6 +22,13 @@ def perform_daily_checkin(user):
 
     # Create today’s check-in
     DailyCheckIn.objects.create(user=user, streak_count=streak)
+    user  # Add XP for check-in
+    new_activity = Activity.objects.create(
+        user=user,
+        activity_type='checkin',
+        reward=25,  # Fixed XP for check-in
+    )
+    new_activity.save()
 
     return {
         'status': 'checked_in',
