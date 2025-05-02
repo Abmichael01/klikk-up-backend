@@ -53,9 +53,9 @@ class Activity(models.Model):
 
         # Add points based on the activity type
         if self.activity_type == 'task' and self.task:
-            self.user.point_balance += self.points
+            self.user.point_balance += self.reward
         elif self.activity_type == 'story' and self.story:
-            self.user.point_balance += self.points
+            self.user.point_balance += self.reward
 
         # Save the updated user fields
         self.user.save()
