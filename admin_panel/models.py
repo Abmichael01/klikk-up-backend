@@ -48,19 +48,12 @@ class Activity(models.Model):
         # Fixed XP for every activity
         FIXED_XP = 10
 
-        # Add XP to the user
         self.user.add_xp(FIXED_XP)
 
-        # Add points based on the activity type
-        if self.activity_type == 'task' and self.task:
-            self.user.point_balance += self.reward
-        elif self.activity_type == 'story' and self.story:
-            self.user.point_balance += self.reward
-
-        # Save the updated user fields
+        self.user.point_balance += self.reward
+       
         self.user.save()
 
-        # Call the original save method
         super().save(*args, **kwargs)
 
     def __str__(self):

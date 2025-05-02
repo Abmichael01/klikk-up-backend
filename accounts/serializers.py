@@ -116,19 +116,10 @@ class UserSerializer(DjoserUserSerializer):
         return ret
 
 class RecentActivitiesSerializer(serializers.ModelSerializer):
-    reward = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     class Meta:
         model = Activity
         fields = ['activity_type', 'reward', 'created_at']
-
-    def get_reward(self, obj):
-        """Fetch reward based on activity type."""
-        if obj.activity_type == 'task' and obj.task:
-            return obj.task.reward
-        elif obj.activity_type == 'story' and obj.story:
-            return obj.story.reward
-        return 0
     
     def get_created_at(self, obj):
         """Format the creation time into human-readable format."""

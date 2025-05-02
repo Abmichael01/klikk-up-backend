@@ -22,7 +22,7 @@ def perform_daily_checkin(user):
 
     # Create today’s check-in
     DailyCheckIn.objects.create(user=user, streak_count=streak)
-    user  # Add XP for check-in
+    # Add XP for check-in
     new_activity = Activity.objects.create(
         user=user,
         activity_type='checkin',
