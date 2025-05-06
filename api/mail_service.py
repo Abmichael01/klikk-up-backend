@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.conf import settings
 
 def send_coupon_email(username, email, coupon_code):
-    subject = 'Your Coupon Code is Ready!'
+    subject = 'Complete your registration'
     from_email = "klikkuphelp@gmail.com"
     to_email = email
 
@@ -18,16 +18,22 @@ def send_coupon_email(username, email, coupon_code):
     html_content = render_to_string('coupon-code.html', context)
 
     text_content = f"""
-    Hi {username}!
+    Hi {username},
 
-    Thanks for your payment — here’s your coupon code:
+    We’ve successfully received your payment — thank you!
+
+    To complete your registration on KlikkUp, please use the unique code below:
 
     {coupon_code}
 
-    Use it to signup here: https://klikk-up.vercel.app/auth/register?coupon_code={coupon_code}
+    You can enter this code during signup by visiting the link below:
+    https://klikkupp.com/auth/register?coupon_code={coupon_code}
 
-    Thanks,
-    Your Brand
+    If you have any questions or didn’t make this request, feel free to reach out to us at support@klikkup.com.
+
+    Warm regards,  
+    The KlikkUp Team
+
     """
 
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
