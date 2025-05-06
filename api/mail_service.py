@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.conf import settings
 
 def send_coupon_email(username, email, coupon_code):
-    subject = 'Complete your registration'
+    subject = 'Finish setting up your KlikkUp account'
     from_email = "klikkuphelp@gmail.com"
     to_email = email
 
