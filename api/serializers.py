@@ -109,3 +109,14 @@ class RecentActivitiesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = ['activity_type', 'reward', 'created_at']
+
+class RoadmapSerializer(serializers.ModelSerializer):
+    """Serializer for the roadmap."""
+    total_users = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['total_users']
+        
+    def get_total_users(self, obj):
+        return User.objects.count()
