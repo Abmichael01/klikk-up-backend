@@ -5,7 +5,7 @@ from django.conf import settings
 
 def send_coupon_email(username, email, coupon_code):
     subject = 'Finish setting up your KlikkUp account'
-    from_email = "no-reply@klikkupp.com"  # ✅ Use verified domain-based email
+    from_email = "noreply@klikkupp.com"  # ✅ Use verified domain-based email
     to_email = email
 
     context = {
