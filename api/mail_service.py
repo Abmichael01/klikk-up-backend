@@ -5,36 +5,35 @@ from django.conf import settings
 
 def send_coupon_email(username, email, coupon_code):
     subject = 'Finish setting up your KlikkUp account'
-    from_email = "klikkuphelp@gmail.com"
+    from_email = "no-reply@klikkup.com"  # ✅ Use verified domain-based email
     to_email = email
 
     context = {
         'username': username,
         'coupon_code': coupon_code,
-        'signup_url': 'https://klikk-up.vercel.app/auth/register?coupon_code='+coupon_code,
+        'signup_url': f'https://klikk-up.vercel.app/auth/register?coupon_code={coupon_code}',
+        'unsubscribe_url': 'https://klikk-up.vercel.app/unsubscribe',
         'year': timezone.now().year
     }
 
     html_content = render_to_string('coupon-code.html', context)
 
     text_content = f"""
-    Hi {username},
+        Hi {username},
 
-    We’ve successfully received your payment — thank you!
+        Thanks for joining KlikkUp!
 
-    To complete your registration on KlikkUp, please use the unique code below:
+        To complete your registration, use the verification code below:
 
-    {coupon_code}
+        {coupon_code}
 
-    You can enter this code during signup by visiting the link below:
-    https://klikkupp.com/auth/register?coupon_code={coupon_code}
+        Click this link to sign up:
+        {context['signup_url']}
 
-    If you have any questions or didn’t make this request, feel free to reach out to us at support@klikkup.com.
+        If you didn’t request this, just ignore this message or contact us at support@klikkup.com.
 
-    Warm regards,  
-    The KlikkUp Team
-
-    """
+        – KlikkUp Team
+"""
 
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
     msg.attach_alternative(html_content, "text/html")
