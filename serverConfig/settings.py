@@ -89,6 +89,8 @@ else:
     PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_TEST_KEY')
     PAYSTACK_PUBLIC_KEY = os.getenv('PAYSTACK_PUBLIC_TEST_KEY')
 
+ZEPTO_MAIL_API_KEY = os.getenv("ZEPTO_MAIL_API_KEY") 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -171,7 +173,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # EMAIL CONFIG
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST = "smtp.zoho.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
