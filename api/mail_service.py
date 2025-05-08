@@ -11,7 +11,7 @@ def send_coupon_email(username, email, coupon_code):
     context = {
         'username': username,
         'coupon_code': coupon_code,
-        'signup_url': f'https://klikk-up.vercel.app/auth/register?coupon_code={coupon_code}',
+        'signup_url': f'https://klikkupp.com/auth/register?coupon_code={coupon_code}',
         'unsubscribe_url': 'https://klikk-up.vercel.app/unsubscribe',
         'year': timezone.now().year
     }

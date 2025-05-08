@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager,
 )
+from wallets.services import credit_wallet
 
 
 class CustomUserManager(BaseUserManager):
@@ -57,6 +58,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.referred_by:
             self.referred_by.point_balance += points
             self.referred_by.save()
+            credit_wallet(self.referred_by, 300, f"10% reg fee from {self.username}")
+            
         self.point_balance += points
         self.save()
 
