@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
-    ".vercel.app", "127.0.0.1", "localhost", "14f2-129-222-206-146.ngrok-free.app", 'klikkupp.com', '82.29.190.78', 'api.klikkupp.com']
+    ".vercel.app", "127.0.0.1", "localhost", 'klikkupp.com', '82.29.190.78', 'api.klikkupp.com', "ad28-102-89-69-111.ngrok-free.app"]
 
 
 # Installed Apps

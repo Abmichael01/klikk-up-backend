@@ -29,11 +29,12 @@ class Transaction(models.Model):
         FAILED = "FAILED", "Failed"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
+    wallet = models.ForeignKey('Wallet', on_delete=models.CASCADE, related_name='transactions')
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     transaction_type = models.CharField(max_length=10, choices=TransactionType.choices)
     status = models.CharField(max_length=10, choices=TransactionStatus.choices, default=TransactionStatus.SUCCESS)
     description = models.CharField(max_length=255, blank=True)
+    reference = models.CharField(max_length=100, unique=True, help_text="Unique transaction reference for traceability.", default="")
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
