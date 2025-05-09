@@ -36,6 +36,9 @@ class Transaction(models.Model):
     description = models.CharField(max_length=255, blank=True)
     reference = models.CharField(max_length=100, unique=True, help_text="Unique transaction reference for traceability.", default="")
     timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-timestamp']
 
     def __str__(self):
         return f"{self.transaction_type} of ₦{self.amount} - {self.wallet.user.username} [{self.status}]"

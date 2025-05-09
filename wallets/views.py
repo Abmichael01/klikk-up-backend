@@ -144,24 +144,43 @@ class PaystackWebhook(APIView):
         amount = data.get("amount")
         recipient = data.get("recipient", {}).get("name", "Unknown")
         print(f"[Transfer Success] Reference: {reference}, Amount: {amount}, Recipient: {recipient}")
+        print(data)
 
         # Update the transaction status
-        transaction = TransactionModel.objects.get(reference=reference)
+        transaction = TransactionModel.objects.filter(reference=reference).first()
         print(transaction)
+        
+        while transaction == None:
+            print("checking again.... \n")
+            transaction = TransactionModel.objects.filter(reference=reference).first()
+            
         if transaction:
+            print(transaction)
             transaction.status=TransactionModel.TransactionStatus.SUCCESS
             transaction.save()
+            print(transaction)
         else:
-            print(f" /n [WARN] No transaction found with reference {reference} /n")
+            print(f" \n [WARN] No transaction found with reference {reference} \n")
 
     def handle_transfer_failed(self, data):
         reference = data.get("reference")
         reason = data.get("reason")
         print(f"[Transfer Failed] Reference: {reference}, Reason: {reason}")
 
-        updated = TransactionModel.objects.filter(reference=reference).update(status=TransactionModel.TransactionStatus.FAILED)
-        if updated == 0:
-            print(f"[WARN] No transaction found with reference {reference}")
+        transaction = TransactionModel.objects.filter(reference=reference).first()
+        print(transaction)
+        
+        while transaction == None:
+            print("checking again.... \n")
+            transaction = TransactionModel.objects.filter(reference=reference).first()
+            
+        if transaction:
+            print(transaction)
+            transaction.status=TransactionModel.TransactionStatus.FAILED
+            transaction.save()
+            print(transaction)
+        else:
+            print(f" \n [WARN] No transaction found with reference {reference} \n")
 
     def handle_transfer_reversed(self, data):
         reference = data.get("reference")
@@ -174,6 +193,9 @@ class PaystackWebhook(APIView):
 
 
         # Optional: Flag reversal in transaction table
+        
+        
+        
 class WithdrawView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
