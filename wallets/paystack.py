@@ -89,7 +89,7 @@ class Transfer:
         
         data = {
             "source": "balance",
-            "amount": int(amount) * 100,  # Paystack uses kobo
+            "amount": (int(amount)-10) * 100,  # Paystack uses kobo
             "recipient": recipient_code,
             "reference": reference,
             "reason": reason
