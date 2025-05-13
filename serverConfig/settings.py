@@ -164,6 +164,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+MEDIA_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -280,5 +281,16 @@ CSRF_TRUSTED_ORIGINS = [
 CSRF_COOKIE_SAMESITE = "None"  # ✅ Allows cross-site usage
 CSRF_COOKIE_HTTPONLY = False   # ✅ Allows JavaScript to read it
 CSRF_COOKIE_SECURE = True      # ✅ Must be true if using HTTPS
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
+
 
 

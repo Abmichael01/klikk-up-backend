@@ -5,6 +5,8 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 from wallets.services import credit_wallet
+from django.utils import timezone
+from datetime import timedelta
 
 
 class CustomUserManager(BaseUserManager):
@@ -84,3 +86,4 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Add XP and save, without storing level."""
         self.xp += amount
         self.save()
+        

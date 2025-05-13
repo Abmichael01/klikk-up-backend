@@ -18,6 +18,7 @@ from .services import debit_wallet, get_or_create_wallet  # your existing util
 import uuid
 from decimal import Decimal
 from django.db.models import Q
+from accounts.otp import verify_otp 
 
 
 class WalletDetailView(generics.RetrieveAPIView):
@@ -202,24 +203,29 @@ class WithdrawView(APIView):
     def post(self, request):
         user = request.user
         amount = request.data.get("amount")
+        otp = request.data.get("otp")
         amount = float(amount)
         print(request.data)
+        
+        if not otp:
+            return Response({"message": "OTP is required to confirm withdrawal."}, status=status.HTTP_400_BAD_REQUEST)
+        elif not verify_otp( f"otp:{user.email}", otp):
+            return Response({"message": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not amount:
-            return Response({"detail": "Amount is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Amount is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             amount = Decimal(amount)
         except:
-            return Response({"detail": "Invalid amount."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Invalid amount."}, status=status.HTTP_400_BAD_REQUEST)
 
 
         wallet = get_or_create_wallet(user)
 
         # Ensure user has filled bank details
         if not all([wallet.bank_code, wallet.account_number, wallet.account_name]):
-            print("no bank details")
-            return Response({"detail": "Bank details are incomplete. Please set up your bank information."},
+            return Response({"message": "Bank details are incomplete. Please set up your bank information."},
                             status=status.HTTP_400_BAD_REQUEST)
 
         transfer = Transfer()
@@ -247,7 +253,6 @@ class WithdrawView(APIView):
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print(f"detail: {str(e)}")
             return Response({
-                "detail": str(e)
+                "message": str(e)
             }, status=status.HTTP_400_BAD_REQUEST)

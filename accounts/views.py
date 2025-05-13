@@ -12,6 +12,10 @@ from rest_framework import generics, status
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
+from .otp import generate_otp, store_otp
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils import timezone
 
 
 User = get_user_model()
@@ -142,3 +146,43 @@ class AccountOverviewView(generics.RetrieveAPIView):
     def get_object(self):
         """Return the authenticated user."""
         return self.request.user
+    
+class SendOTPView(APIView):
+    def post(self, request):
+        email = request.user.email
+        otp = generate_otp()
+        store_otp(f"otp:{email}", otp)
+
+        subject = 'Your KlikkUp Verification Code'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = email
+
+        context = {
+            'username': request.user.username,
+            'otp': otp,
+            'year': timezone.now().year,
+        }
+
+        html_content = render_to_string('otp.html', context)
+
+        text_content = f"""
+            Hi {request.user.username},
+
+            Your KlikkUp verification code is:
+
+            {otp}
+
+            If you didn’t request this, you can safely ignore this message or contact us at support@klikkup.com.
+
+            – KlikkUp Team
+        """
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        msg.attach_alternative(html_content, "text/html")
+
+        try:
+            msg.send()
+            return Response({"detail": "OTP sent successfully."})
+        except Exception as e:
+            print("Email sending failed:", str(e))
+            return Response({"detail": "Failed to send OTP."}, status=500)
