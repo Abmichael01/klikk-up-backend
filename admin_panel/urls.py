@@ -7,5 +7,5 @@ urlpatterns = [
     path('task/<int:pk>/', TaskUpdateDeleteView.as_view()),
     path('story/', StoryListCreateView.as_view()),
     path('story/<int:pk>/', StoryUpdateDeleteView.as_view()),
-    
+    path("admin/analytics-data/", DashboardAnalyticsView.as_view(), name="dashboard-analytics"),
 ]

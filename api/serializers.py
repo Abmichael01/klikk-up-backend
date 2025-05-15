@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 from admin_panel.models import Task, Activity, Story
+from django.utils import timezone
+from datetime import timedelta
 
 User = get_user_model()
 
@@ -78,31 +80,49 @@ class ReferralsDataSerializer(serializers.ModelSerializer):
         return round(percentage_rank, 2)
 
 class TaskSerializer(serializers.ModelSerializer):
-    """Serializer for individual tasks."""
+    completed = serializers.SerializerMethodField()
+
     class Meta:
         model = Task
-        fields = ["id", "title", "link", "reward", "estimated_time"]
+        fields = ["id", "title", "link", "reward", "estimated_time", "completed"]
+
+    def get_completed(self, obj):
+        user = self.context['request'].user
+        now = timezone.now()
+
+        # Mark as completed if task is more than a day old
+        if now - obj.created_at > timedelta(days=1):
+            return True
+
+        # Otherwise check if activity exists
+        activity = Activity.objects.filter(user=user, task=obj).first()
+        return activity is not None
 
 class StorySerializer(serializers.ModelSerializer):
-    """Serializer for individual stories."""
     story_read = serializers.SerializerMethodField()
 
     class Meta:
         model = Story
         fields = [
-            "id", 
-            "title", 
-            "body", 
-            "reward", 
+            "id",
+            "title",
+            "body",
+            "reward",
             "estimated_time",
             "story_read",
         ]
 
     def get_story_read(self, obj):
-        """Check if the story has been read by the user."""
         user = self.context['request'].user
+        now = timezone.now()
+
+        # Mark as read if story is more than a day old
+        if now - obj.created_at > timedelta(days=1):
+            return True
+
+        # Otherwise check if activity exists
         activity = Activity.objects.filter(user=user, story=obj).first()
-        return activity is not None if activity else False
+        return activity is not None
     
 class RecentActivitiesSerializer(serializers.ModelSerializer):
 

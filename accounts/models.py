@@ -36,6 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     referred_by = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='referrals'
     )
+    date_joined = models.DateTimeField(default=timezone.now)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
