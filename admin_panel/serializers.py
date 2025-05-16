@@ -27,3 +27,22 @@ class StorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Story
         fields = ["id", "title", "body", "reward"]
+        
+class CourseCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseCategory
+        fields = ['id', 'name', 'slug']
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    category = CourseCategorySerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=CourseCategory.objects.all(),
+        write_only=True,
+        source='category'
+    )
+
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'course_url', 'category', 'category_id', 'created_at']
+        read_only_fields = ['created_at']

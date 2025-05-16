@@ -71,3 +71,21 @@ class DailyCheckIn(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.date} - Streak: {self.streak_count}"
+    
+class CourseCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Course(models.Model):
+    title = models.CharField(max_length=255)
+    category = models.ForeignKey(CourseCategory, on_delete=models.SET_NULL, null=True, related_name='courses')
+    course_url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

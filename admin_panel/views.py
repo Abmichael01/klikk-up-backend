@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -66,6 +66,10 @@ class StoryUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StorySerializer
     queryset = Story.objects.all()
     
+class CourseView(viewsets.ModelViewSet):
+    queryset = Course.objects.select_related('category').order_by('-created_at')
+    serializer_class = CourseSerializer
+    permission_classes = []
 
 class DashboardAnalyticsView(APIView):
     def get(self, request):

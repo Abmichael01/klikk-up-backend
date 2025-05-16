@@ -31,7 +31,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
-    ".vercel.app", "127.0.0.1", "localhost", 'klikkupp.com', '82.29.190.78', 'api.klikkupp.com', "0248-2c0f-2a80-15-9410-ad90-c53c-d430-e4d6.ngrok-free.app"]
+    ".vercel.app", "127.0.0.1", "localhost", 'klikkupp.com', '82.29.190.78', 'api.klikkupp.com', "0248-2c0f-2a80-15-9410-ad90-c53c-d430-e4d6.ngrok-free.app",
+    "admin.klikkupp.local",
+    "klikkupp.local",
+    "admin.localhost"
+    ]
 
 
 # Installed Apps
@@ -264,6 +268,11 @@ CORS_ALLOWED_ORIGINS = [
     "https://klikk-up.vercel.app",
     'https://klikkupp.com',
     'http://klikkupp.com',
+    "http://admin.klikkupp.local:5173",
+    "http://klikkupp.local:5173",
+    "http://admin.localhost",
+    "https://admin.klikkupp.com/"
+    
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -274,6 +283,10 @@ CSRF_TRUSTED_ORIGINS = [
     "https://klikk-up.vercel.app",
     'https://klikkupp.com',
     'http://klikkupp.com',
+    "http://admin.klikkupp.local:5173",
+    "http://klikkupp.local:5173",
+    "http://admin.localhost",
+    "https://admin.klikkupp.com/"
 ]
 
 
