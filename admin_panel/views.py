@@ -69,7 +69,12 @@ class StoryUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 class CourseView(viewsets.ModelViewSet):
     queryset = Course.objects.select_related('category').order_by('-created_at')
     serializer_class = CourseSerializer
-    permission_classes = []
+    permission_classes = [IsAdminUser]
+    
+class CourseCategoryView(viewsets.ModelViewSet):
+    queryset = CourseCategory.objects.all().order_by('-created_at')
+    serializer_class = CourseCategorySerializer
+    permission_classes = [IsAdminUser]
 
 class DashboardAnalyticsView(APIView):
     def get(self, request):

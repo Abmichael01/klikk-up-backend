@@ -29,9 +29,13 @@ class StorySerializer(serializers.ModelSerializer):
         fields = ["id", "title", "body", "reward"]
         
 class CourseCategorySerializer(serializers.ModelSerializer):
+    courses_count = serializers.SerializerMethodField()
     class Meta:
         model = CourseCategory
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'courses_count']
+        
+    def get_courses_count(self, obj): 
+        return Course.objects.filter(category=obj).count()
 
 
 class CourseSerializer(serializers.ModelSerializer):

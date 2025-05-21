@@ -257,10 +257,8 @@ DJOSER = {
         "user": "accounts.serializers.UserSerializer",
         "current_user": "accounts.serializers.UserSerializer",
         "user_delete": "accounts.serializers.UserSerializer",
-        
     },
 }
-
 
 # CORS CONFIG
 CORS_ALLOWED_ORIGINS = [
@@ -271,7 +269,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://admin.klikkupp.local:5173",
     "http://klikkupp.local:5173",
     "http://admin.localhost",
-    "https://admin.klikkupp.com/"
+    "https://admin.klikkupp.com"
     
 ]
 CORS_ALLOW_CREDENTIALS = True
@@ -286,7 +284,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://admin.klikkupp.local:5173",
     "http://klikkupp.local:5173",
     "http://admin.localhost",
-    "https://admin.klikkupp.com/"
+    "https://admin.klikkupp.com",
 ]
 
 
@@ -303,6 +301,3 @@ CSRF_COOKIE_SECURE = True      # ✅ Must be true if using HTTPS
 #         }
 #     }
 # }
-
-
-
