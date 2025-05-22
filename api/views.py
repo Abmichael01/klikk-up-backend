@@ -13,6 +13,11 @@ from django.contrib.auth import logout
 from datetime import timedelta
 from django.utils import timezone
 
+from rest_framework.pagination import PageNumberPagination
+from admin_panel.models import Course, CourseCategory
+from admin_panel.serializers import CourseSerializer, CourseCategorySerializer
+from django.db.models import Q
+
 
 User = get_user_model() 
 
@@ -244,3 +249,57 @@ class RoadmapView(APIView):
             "users_count": users_count,
         }
         return Response(roadmap_data, status=status.HTTP_200_OK)
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 9
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class CoursesView(APIView):
+    def get(self, request):
+        # Get query params
+        category_id = request.query_params.get("category")
+        search_query = request.query_params.get("query", "").strip()
+        page = request.query_params.get("page", 1)
+
+        # Fetch all categories for dropdown/filter
+        categories = CourseCategory.objects.all()
+        category_serializer = CourseCategorySerializer(categories, many=True)
+
+        # Start with all courses
+        queryset = Course.objects.select_related('category').order_by('-created_at')
+
+        # Filter by category if provided
+        if category_id:
+            try:
+                category_id = int(category_id)
+                queryset = queryset.filter(category_id=category_id)
+            except (ValueError, TypeError):
+                pass  # Invalid category ID — ignore filter
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(category__name__icontains=search_query)
+            )
+        
+        # Paginate results
+        paginator = StandardResultsSetPagination()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        # Serialize data
+        course_serializer = CourseSerializer(paginated_queryset, many=True)
+
+        # Build final response
+        data = {
+            "courses": course_serializer.data,
+            "categories": category_serializer.data,
+            "has_next": paginator.page.has_next(),
+            "current_page": paginator.page.number,
+            "total_pages": paginator.page.paginator.num_pages,
+            "total_results": paginator.page.paginator.count,
+        }
+        
+        return Response(data, status=status.HTTP_200_OK)
