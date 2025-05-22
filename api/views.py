@@ -281,7 +281,6 @@ class CoursesView(APIView):
         if search_query:
             queryset = queryset.filter(
                 Q(title__icontains=search_query) |
-                Q(description__icontains=search_query) |
                 Q(category__name__icontains=search_query)
             )
         
