@@ -16,6 +16,7 @@ from .otp import generate_otp, store_otp
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
+from accounts.otp import verify_otp
 
 
 User = get_user_model()
@@ -186,3 +187,28 @@ class SendOTPView(APIView):
         except Exception as e:
             print("Email sending failed:", str(e))
             return Response({"detail": "Failed to send OTP."}, status=500)
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get('oldPassword')
+        new_password = request.data.get('newPassword')
+        otp = request.data.get('otp')
+        
+        
+        
+        if not otp:
+            return Response({"message": "OTP is required to change otp"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not user.check_password(old_password):
+            return Response({"detail": "Old password is incorrect."}, status=400)
+        
+        if not verify_otp( f"otp:{user.email}", otp):
+            return Response({"message": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "Password changed successfully."})

@@ -276,6 +276,18 @@ files = [
 ]
 
 [[package]]
+name = "dependencies"
+version = "7.7.1"
+description = "Constructor injection designed with OOP in mind."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "dependencies-7.7.1-py2.py3-none-any.whl", hash = "sha256:1064eca85da8090aaffb800a6e2bab344fb058e0ba02858571ec061612a3d8c1"},
+    {file = "dependencies-7.7.1.tar.gz", hash = "sha256:6fc79935f61ae33bf33ca0aa0cc612e9cad9a2bc05a34928becb4d9856725d1a"},
+]
+
+[[package]]
 name = "dj-database-url"
 version = "2.3.0"
 description = "Use Database URLs in your Django Application."
@@ -861,4 +873,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "f45716293a7b49c071c5c3fc6ccecea4c1cae68941fe29f044649369190bf311"
+content-hash = "4ee410bd33c6540dcb1245a224e52a316c5fb4e05c7046df381befab749333b5"
