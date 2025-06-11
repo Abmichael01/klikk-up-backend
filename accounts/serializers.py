@@ -21,7 +21,7 @@ class UserCreateSerializer(DjoserUserCreateSerializer):
         model = User
         fields = [
             "id", "email", "username", "password", "coupon", "ref_code",
-            "is_admin", "is_staff", "is_superuser", "point_balance"
+            "is_admin", "is_staff", "is_superuser", "point_balance", "is_partner"
         ]
 
     def validate_coupon(self, value):
@@ -91,6 +91,7 @@ class UserSerializer(DjoserUserSerializer):
             "id", 
             "username",
             "email",
+            "is_partner",
             "roles", 
             "is_admin", 
             "is_staff", 

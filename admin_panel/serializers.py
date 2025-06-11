@@ -17,7 +17,7 @@ class TaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Task
-        fields = ["id", "title", "link", "reward", "confirmation_code"]
+        fields = ["id", "title", "link", "reward", "confirmation_code", "estimated_time"]
         
     def create(self, validated_data):
         return super().create(validated_data)
@@ -26,7 +26,7 @@ class StorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Story
-        fields = ["id", "title", "body", "reward"]
+        fields = ["id", "title", "body", "reward", "estimated_time"]
         
 class CourseCategorySerializer(serializers.ModelSerializer):
     courses_count = serializers.SerializerMethodField()
