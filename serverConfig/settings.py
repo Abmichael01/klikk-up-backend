@@ -64,6 +64,8 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -93,7 +95,15 @@ else:
     PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_TEST_KEY')
     PAYSTACK_PUBLIC_KEY = os.getenv('PAYSTACK_PUBLIC_TEST_KEY')
 
-ZEPTO_MAIL_API_KEY = os.getenv("ZEPTO_MAIL_API_KEY") 
+ZEPTO_MAIL_API_KEY = os.getenv("ZEPTO_MAIL_API_KEY")
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'drfksqwt5',
+    'API_KEY': '598852266459787',
+    'API_SECRET': 'QCI8AlaIxQ85M3izNYsQU8nxbTg'
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 TEMPLATES = [
     {
@@ -168,6 +178,8 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

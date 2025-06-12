@@ -2,6 +2,8 @@ import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
+from cloudinary_storage.storage import MediaCloudinaryStorage
+
 
 User = get_user_model()
 
@@ -22,6 +24,12 @@ class Task(models.Model):
     reward = models.IntegerField()
     confirmation_code = models.CharField(max_length=20, blank=True, null=True)
     estimated_time = models.IntegerField(default=1)  # in minutes
+    banner = models.ImageField(
+        upload_to='task_banners/',
+        storage=MediaCloudinaryStorage(),
+        blank=True,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 class Story(models.Model):
@@ -29,6 +37,12 @@ class Story(models.Model):
     body = models.TextField()
     reward = models.IntegerField()
     estimated_time = models.IntegerField(default=1)  # in minutes
+    banner = models.ImageField(
+        upload_to='story_banners/',
+        storage=MediaCloudinaryStorage(),
+        blank=True,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 class Activity(models.Model):
