@@ -5,6 +5,9 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'courses', CourseView, basename='course')
 router.register(r'course-categories', CourseCategoryView, basename='course-categories')
+router.register('announcements', AnnouncementView, basename='announcements')
+router.register('giveaways', GiveawayView, basename='admin-giveaway')
+
 
 urlpatterns = [
     path('coupons/', CouponView.as_view(), name='coupon-list-create'),

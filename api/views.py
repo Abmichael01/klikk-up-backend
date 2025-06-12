@@ -18,6 +18,9 @@ from admin_panel.models import Course, CourseCategory
 from admin_panel.serializers import CourseSerializer, CourseCategorySerializer
 from django.db.models import Q
 
+from admin_panel.models import Announcement
+from .serializers import AnnouncementSerializer
+
 
 User = get_user_model() 
 
@@ -302,3 +305,10 @@ class CoursesView(APIView):
         }
         
         return Response(data, status=status.HTTP_200_OK)
+    
+class AnnouncementListView(APIView):
+    def get(self, request):
+        # Only get active announcements
+        announcements = Announcement.objects.filter(is_active=True)
+        serializer = AnnouncementSerializer(announcements, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

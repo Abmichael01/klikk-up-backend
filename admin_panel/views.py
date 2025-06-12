@@ -75,6 +75,20 @@ class CourseCategoryView(viewsets.ModelViewSet):
     queryset = CourseCategory.objects.all().order_by('-created_at')
     serializer_class = CourseCategorySerializer
     permission_classes = [IsAdminUser]
+    
+class AnnouncementView(viewsets.ModelViewSet):
+    queryset = Announcement.objects.all()
+    serializer_class = AnnouncementAdminSerializer
+    permission_classes = [IsAdminUser]
+    
+class GiveawayView(viewsets.ModelViewSet):
+    """
+    Admin viewset for managing giveaways.
+    Provides CRUD operations: list, create, retrieve, update, delete
+    """
+    queryset = Giveaway.objects.all().order_by('-created_at')
+    serializer_class = GiveawayAdminSerializer
+    permission_classes = [IsAdminUser]
 
 class DashboardAnalyticsView(APIView):
     def get(self, request):

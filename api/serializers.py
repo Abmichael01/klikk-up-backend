@@ -4,6 +4,7 @@ from django.db.models import Count
 from admin_panel.models import Task, Activity, Story
 from django.utils import timezone
 from datetime import timedelta
+from admin_panel.models import Announcement
 
 User = get_user_model()
 
@@ -141,3 +142,13 @@ class RoadmapSerializer(serializers.ModelSerializer):
         
     def get_total_users(self, obj):
         return User.objects.count()
+
+
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Announcement
+        fields = ['id', 'title', 'content', 'created_at']
+        read_only_fields = ['created_at']
+        
