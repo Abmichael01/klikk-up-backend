@@ -84,7 +84,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ["id", "title", "link", "reward", "estimated_time", "completed"]
+        fields = ["id", "title", "link", "reward", "estimated_time", "completed", "banner"]
 
     def get_completed(self, obj):
         user = self.context['request'].user
@@ -110,6 +110,7 @@ class StorySerializer(serializers.ModelSerializer):
             "reward",
             "estimated_time",
             "story_read",
+            "banner",
         ]
 
     def get_story_read(self, obj):
