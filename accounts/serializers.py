@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.db.models import Sum, Case, When, F
 from _utils import format_time_since
 from django.template.defaultfilters import timesince
+from datetime import timedelta
 
 
 User = get_user_model()
@@ -230,5 +231,15 @@ class AccountOverviewSerializer(serializers.ModelSerializer):
         return DailyCheckIn.objects.filter(user=obj, date=today).exists()
     
     def get_streak(self, obj):
+        today = timezone.now().date()
+        yesterday = today - timedelta(days=1)
+
         last_checkin = DailyCheckIn.objects.filter(user=obj).order_by('-date').first()
-        return last_checkin.streak_count if last_checkin else 0
+        
+        if not last_checkin:
+            return 0
+
+        if last_checkin.date == today or last_checkin.date == yesterday:
+            return last_checkin.streak_count
+        
+        return 0  # streak is broken

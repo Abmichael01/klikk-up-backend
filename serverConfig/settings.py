@@ -197,9 +197,17 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 
 REST_FRAMEWORK = {
-  'DEFAULT_AUTHENTICATION_CLASSES': (
-      'serverConfig.authenticate.CustomAuthentication',
-  ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'serverConfig.authenticate.CustomAuthentication',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.AnonRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '10/min',
+        'anon': '5/min',
+    }
 }
 
 CSRF_COOKIE_NAME = "csrftoken"
