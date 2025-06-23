@@ -220,7 +220,7 @@ class RoadmapView(APIView):
         roadmap_data = {
             "roadmap": [
                 {"title": "Launch of KLIKK UP", "completed": True},
-                {"title": "Load testing", "completed": True},
+                {"title": "Load testing", "completed": False},
                 {"title": "Marketing", "completed": False},
                 {"title": "Social quest", "completed": False},
                 {"title": "Stories task", "completed": False},
@@ -346,3 +346,4 @@ class ParticipateInGiveawayView(APIView):
 
         serializer = GiveawayParticipationSerializer(participation)
         return Response({"detail": "Successfully entered the giveaway!", "data": serializer.data}, status=status.HTTP_201_CREATED)
+    
