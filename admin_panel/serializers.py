@@ -76,7 +76,8 @@ class GiveawayAdminSerializer(serializers.ModelSerializer):
         fields = [
             'id', 
             'title', 
-            'prize', 
+            'prize',
+            "is_active", 
             'date', 
             'created_at',
             'participants_count',

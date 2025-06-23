@@ -63,7 +63,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.referred_by:
             self.referred_by.point_balance += points
             self.referred_by.save()
-            credit_wallet(self.referred_by, 300, f"10% reg fee from {self.username}")
+            
+            reward_percentage = 0.5 if self.referred_by.is_partner else 0.1
+            reward_amount = 1500 if self.is_partner else 300
+            credit_wallet(self.referred_by, reward_amount, f"{int(reward_percentage * 100)}% reg fee from {self.username}")
             
         self.point_balance += points
         self.save()

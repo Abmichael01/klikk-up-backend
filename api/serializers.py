@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db.models import Count
-from admin_panel.models import Task, Activity, Story
+from admin_panel.models import *
 from django.utils import timezone
 from datetime import timedelta
 from admin_panel.models import Announcement
@@ -47,13 +47,6 @@ class ReferralsDataSerializer(serializers.ModelSerializer):
         """Generate a referral code for the user."""
         return obj.username
 
-    def get_rank(self, obj):
-        """Calculate the user's referral rank."""
-        user_referral_count = obj.referrals.count()
-        rank = User.objects.annotate(
-            referral_count=Count("referrals")
-        ).filter(referral_count__gt=user_referral_count).count() + 1
-        return rank
     
     def get_leaderboard(self, obj):
         """Return the top 100 users based on referral count."""
@@ -151,4 +144,22 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         model = Announcement
         fields = ['id', 'title', 'content', 'created_at']
         read_only_fields = ['created_at']
+
+class GiveawaySerializer(serializers.ModelSerializer):
+    participated = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Giveaway
+        fields = ['id', 'title', 'prize', 'date', 'is_active', 'created_at', 'participated']
+
+    def get_participated(self, obj):
+        user = self.context['request'].user
+        return GiveawayParticipation.objects.filter(user=user, giveaway=obj).exists()
+    
+
+class GiveawayParticipationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GiveawayParticipation
+        fields = ['id', 'giveaway', 'entry_date', 'winner']
+        read_only_fields = ['id', 'entry_date', 'winner']
         

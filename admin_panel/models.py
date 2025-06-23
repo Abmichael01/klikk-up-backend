@@ -64,16 +64,16 @@ class Activity(models.Model):
         # Fixed XP for every activity
         FIXED_XP = 10
 
-        self.user.add_xp(FIXED_XP)
+        self.user.add_xp(FIXED_XP) # type: ignore
 
-        self.user.point_balance += self.reward
+        self.user.point_balance += self.reward # type: ignore
        
         self.user.save()
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user.username} - {self.activity_type} - {self.task.reward if self.task else self.story.reward} points"
+        return f"{self.user.username} - {self.activity_type} - {self.task.reward if self.task else self.story.reward} points" # type: ignore
     
 
 class DailyCheckIn(models.Model):
@@ -110,14 +110,25 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+# The code defines two models, `Giveaway` and `GiveawayParticipation`, for managing giveaways and user
+# participation in Django.
 class Giveaway(models.Model):
     title = models.CharField(max_length=255)
     prize = models.CharField(max_length=255)
     date = models.DateTimeField()
+    is_active = models.BooleanField(default=False, help_text="Toggle to activate/deactivate this giveaway")
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            Giveaway.objects.filter(is_active=True).update(is_active=False)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        ordering = ['-created_at']
 
 class GiveawayParticipation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

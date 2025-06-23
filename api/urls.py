@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import DailyCheckInView, UserReferralsView, TasksView, ConfirmTaskView, StoriesView, StoryView, ConfirmStoryView, RoadmapView, CoursesView, AnnouncementListView
+from .views import *
 
 urlpatterns = [
     path("users/referrals/", UserReferralsView.as_view(), name="user-referrals"),
@@ -15,5 +15,7 @@ urlpatterns = [
     path('users/daily-checkin/', DailyCheckInView.as_view(), name='daily-checkin'),
     path('users/courses/', CoursesView.as_view()),
     # path('announcements/', AnnouncementListView.as_view(), name='announcement-list'),
+    path('giveaways/active/', ActiveGiveawayDetailView.as_view(), name='active-giveaways'),
+    path('giveaways/participate/', ParticipateInGiveawayView.as_view(), name='giveaway-participate'),
 ]
 

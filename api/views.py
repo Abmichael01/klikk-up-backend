@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 
 from api.checkin_service import perform_daily_checkin
 from .serializers import RecentActivitiesSerializer, ReferralsDataSerializer
-from .serializers import TaskSerializer, StorySerializer
-from admin_panel.models import Task, Activity, Story
+from .serializers import *
+from admin_panel.models import *
 from django.contrib.auth import logout
 from datetime import timedelta
 from django.utils import timezone
@@ -20,6 +20,7 @@ from django.db.models import Q
 
 from admin_panel.models import Announcement
 from .serializers import AnnouncementSerializer
+from rest_framework.exceptions import NotFound
 
 
 User = get_user_model() 
@@ -312,3 +313,36 @@ class AnnouncementListView(APIView):
         announcements = Announcement.objects.filter(is_active=True)
         serializer = AnnouncementSerializer(announcements, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ActiveGiveawayDetailView(RetrieveAPIView):
+    serializer_class = GiveawaySerializer
+    permission_classes = [IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        giveaway = Giveaway.objects.filter(is_active=True).first()
+
+        if not giveaway:
+            # Return 200 OK with empty data
+            return Response({"none": True }, status=200)
+
+        serializer = self.get_serializer(giveaway)
+        return Response(serializer.data, status=200)
+    
+class ParticipateInGiveawayView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        giveaway = Giveaway.objects.filter(is_active=True).first()
+
+        if not giveaway:
+            return Response({"detail": "No active giveaway available."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if already participated
+        if GiveawayParticipation.objects.filter(user=user, giveaway=giveaway).exists():
+            return Response({"detail": "You have already participated in this giveaway."}, status=status.HTTP_400_BAD_REQUEST)
+
+        participation = GiveawayParticipation.objects.create(user=user, giveaway=giveaway)
+
+        serializer = GiveawayParticipationSerializer(participation)
+        return Response({"detail": "Successfully entered the giveaway!", "data": serializer.data}, status=status.HTTP_201_CREATED)
