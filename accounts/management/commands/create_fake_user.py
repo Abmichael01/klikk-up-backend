@@ -68,6 +68,11 @@ class Command(BaseCommand):
             sold=True,
             user=user
         )
+        
+    def random_username(self):
+        name_part = ''.join(random.choices(string.ascii_lowercase, k=random.randint(5, 8)))
+        number_part = str(random.randint(10, 99))
+        return name_part + number_part
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -83,7 +88,7 @@ class Command(BaseCommand):
             if usernames:
                 base_username = usernames.pop()
             else:
-                base_username = f"user{random.randint(1000, 9999)}"
+                base_username = self.random_username()
 
             username = self.generate_unique_username(base_username)
             email = self.generate_email(username)
@@ -102,7 +107,6 @@ class Command(BaseCommand):
             user_lookup[username] = user
 
             self.stdout.write(f"✓ {username} created with email {email}")
-
         # Step 2: Assign referrals
         self.stdout.write(self.style.SUCCESS("🔁 Assigning referrals..."))
 
