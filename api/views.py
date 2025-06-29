@@ -98,10 +98,10 @@ class ConfirmTaskView(APIView):
             )
 
         # ⛔️ Check if the task is more than a day old
-        if timezone.now() - task.created_at > timedelta(days=1):
+        if task.expired:
             return Response(
-                {"error": "This task has expired and can no longer be confirmed"},
-                status=status.HTTP_400_BAD_REQUEST,
+            {"error": "This task has expired and can no longer be confirmed"},
+            status=status.HTTP_400_BAD_REQUEST,
             )
 
         # ✅ Proceed to confirm only if confirmation code matches
