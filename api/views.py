@@ -54,7 +54,7 @@ class TasksView(APIView):
             if has_completed:
                 completed_tasks.append(serializer.data)
                 points_earned += task.reward
-            elif task.created_at < one_day_ago:
+            elif task.expired:
                 missed_tasks.append(serializer.data)
             else:
                 available_tasks.append(serializer.data)

@@ -30,6 +30,7 @@ class Task(models.Model):
         blank=True,
         null=True
     )
+    expired = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 class Story(models.Model):
@@ -43,6 +44,7 @@ class Story(models.Model):
         blank=True,
         null=True
     )
+    expired = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 class Activity(models.Model):

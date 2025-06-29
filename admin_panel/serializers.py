@@ -27,7 +27,7 @@ class TaskSerializer(serializers.ModelSerializer):
     banner = Base64ImageField(required=False)
     class Meta:
         model = Task
-        fields = ["id", "title", "link", "reward", "confirmation_code", "banner", "estimated_time"]
+        fields = ["id", "title", "link", "reward", "confirmation_code", "banner", "estimated_time", "expired"]
         
     def create(self, validated_data):
         return super().create(validated_data)
@@ -41,7 +41,7 @@ class StorySerializer(serializers.ModelSerializer):
     banner = Base64ImageField(required=False)
     class Meta:
         model = Story
-        fields = ["id", "title", "body", "reward", "banner", "estimated_time"]
+        fields = ["id", "title", "body", "reward", "banner", "estimated_time", "expired"]
         
 class CourseCategorySerializer(serializers.ModelSerializer):
     courses_count = serializers.SerializerMethodField()

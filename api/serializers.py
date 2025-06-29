@@ -78,15 +78,10 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ["id", "title", "link", "reward", "estimated_time", "completed", "banner"]
+        fields = ["id", "title", "link", "reward", "estimated_time", "completed", "banner", "expired"]
 
     def get_completed(self, obj):
         user = self.context['request'].user
-        now = timezone.now()
-
-        # Mark as completed if task is more than a day old
-        if now - obj.created_at > timedelta(days=1):
-            return True
 
         # Otherwise check if activity exists
         activity = Activity.objects.filter(user=user, task=obj).first()
@@ -105,15 +100,12 @@ class StorySerializer(serializers.ModelSerializer):
             "estimated_time",
             "story_read",
             "banner",
+            "expired"
         ]
 
     def get_story_read(self, obj):
         user = self.context['request'].user
         now = timezone.now()
-
-        # Mark as read if story is more than a day old
-        if now - obj.created_at > timedelta(days=1):
-            return True
 
         # Otherwise check if activity exists
         activity = Activity.objects.filter(user=user, story=obj).first()
