@@ -55,9 +55,9 @@ class UserCreateSerializer(DjoserUserCreateSerializer):
 
         # Assign referral if exists
         if referrer:
-            user.referred_by = referrer
+            user.referred_by = referrer # type: ignore # type: ignore
             user.save()
-            user.reward_referrer()
+            user.reward_referrer() # type: ignore
 
         # Mark coupon as used
         coupon.user = user

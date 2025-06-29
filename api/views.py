@@ -220,11 +220,11 @@ class RoadmapView(APIView):
         roadmap_data = {
             "roadmap": [
                 {"title": "Launch of KLIKK UP", "completed": True},
-                {"title": "Load testing", "completed": False},
-                {"title": "Marketing", "completed": False},
-                {"title": "Social quest", "completed": False},
-                {"title": "Stories task", "completed": False},
-                {"title": "Daily rewards", "completed": False},
+                {"title": "Load testing", "completed": True},
+                {"title": "Marketing", "completed": True},
+                {"title": "Social quest", "completed": True},
+                {"title": "Stories task", "completed": True},
+                {"title": "Daily rewards", "completed": True},
                 {"title": "1000 activation", "completed": False},
                 {"title": "Referral bonus withdrawal", "completed": False},
                 {"title": "100k monthly referral bonus begins", "completed": False},
