@@ -78,6 +78,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"🚀 Creating {count} users..."))
 
+        # Step 1: Create users
         for _ in range(count):
             if usernames:
                 base_username = usernames.pop()
@@ -102,29 +103,25 @@ class Command(BaseCommand):
 
             self.stdout.write(f"✓ {username} created with email {email}")
 
-        # Assign referrals
+        # Step 2: Assign referrals
         self.stdout.write(self.style.SUCCESS("🔁 Assigning referrals..."))
-        all_users = created_users.copy()
-        random.shuffle(all_users)
 
-        # One user gets 20 referrals
-        top_referrer = all_users[0]
-        referred_users = all_users[1:21]
-        for u in referred_users:
-            u.referred_by = top_referrer
-            u.save()
+        referrers = random.sample(created_users, k=20)  # Pick 20 top referrers
+        available_users = set(created_users) - set(referrers)
+        referred_ids = set()
 
-        remaining_users = all_users[21:]
+        for referrer in referrers:
+            max_refs = random.randint(10, 30)
+            possible_refs = list(available_users - {referrer})  # can't refer self
+            random.shuffle(possible_refs)
+            chosen_refs = possible_refs[:max_refs]
 
-        referrer_pool = created_users.copy()
-        ref_count = {}
+            for referred_user in chosen_refs:
+                referred_user.referred_by = referrer
+                referred_user.save()
+                referred_ids.add(referred_user.id)
+                available_users.discard(referred_user)  # Don't reuse
+            self.stdout.write(f"→ {referrer.username} referred {len(chosen_refs)} users")
 
-        for user in remaining_users:
-            valid_referrers = [r for r in referrer_pool if ref_count.get(r.id, 0) < 20 and r.id != user.id]
-            if valid_referrers:
-                referrer = random.choice(valid_referrers)
-                user.referred_by = referrer
-                user.save()
-                ref_count[referrer.id] = ref_count.get(referrer.id, 0) + 1
-
-        self.stdout.write(self.style.SUCCESS(f"\n✅ {len(created_users)} users created with referral data."))
+        self.stdout.write(self.style.SUCCESS(f"\n✅ {len(created_users)} users created"))
+        self.stdout.write(self.style.SUCCESS(f"🏆 20 users assigned as top referrers with 10–30 referrals each."))
