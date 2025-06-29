@@ -31,6 +31,11 @@ class TaskSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         return super().create(validated_data)
+    
+    def validate_banner(self, value):
+        if value in [None, '', b'']:
+            return None
+        return value
 
 class StorySerializer(serializers.ModelSerializer):
     banner = Base64ImageField(required=False)
