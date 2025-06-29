@@ -23,7 +23,7 @@ class Task(models.Model):
     link = models.CharField(max_length=225)
     reward = models.IntegerField()
     confirmation_code = models.CharField(max_length=20, blank=True, null=True)
-    estimated_time = models.IntegerField(default=1)  # in minutes
+    estimated_time = models.FloatField(default=1)  # in minutes
     banner = models.ImageField(
         upload_to='task_banners/',
         storage=MediaCloudinaryStorage(),
@@ -36,7 +36,7 @@ class Story(models.Model):
     title = models.CharField(max_length=225)
     body = models.TextField()
     reward = models.IntegerField()
-    estimated_time = models.IntegerField(default=1)  # in minutes
+    estimated_time = models.FloatField(default=1)  # in minutes
     banner = models.ImageField(
         upload_to='story_banners/',
         storage=MediaCloudinaryStorage(),
