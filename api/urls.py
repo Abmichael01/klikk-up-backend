@@ -14,7 +14,7 @@ urlpatterns = [
     
     path('users/daily-checkin/', DailyCheckInView.as_view(), name='daily-checkin'),
     path('users/courses/', CoursesView.as_view()),
-    # path('announcements/', AnnouncementListView.as_view(), name='announcement-list'),
+    path('announcements-list/', AnnouncementListView.as_view(), name='announcement-list'),
     path('giveaways/active/', ActiveGiveawayDetailView.as_view(), name='active-giveaways'),
     path('giveaways/participate/', ParticipateInGiveawayView.as_view(), name='giveaway-participate'),
 ]

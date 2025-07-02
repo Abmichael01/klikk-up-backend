@@ -6,7 +6,7 @@ from .models import *
 from .serializers import *
 import secrets
 import string
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from datetime import timedelta
 from django.utils.timezone import now
 from django.db.models import Count, Sum
@@ -80,6 +80,12 @@ class AnnouncementView(viewsets.ModelViewSet):
     queryset = Announcement.objects.all()
     serializer_class = AnnouncementAdminSerializer
     permission_classes = [IsAdminUser]
+    
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]  # Or use IsAuthenticated() if you want only logged-in users to view
+        return [IsAdminUser()]
     
 class GiveawayView(viewsets.ModelViewSet):
     """
