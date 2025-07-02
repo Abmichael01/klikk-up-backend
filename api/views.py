@@ -149,7 +149,7 @@ class StoriesView(APIView):
             if has_read:
                 stories_read.append(serializer.data)
                 points_earned += story.reward
-            elif not has_read and story.created_at < one_day_ago:
+            elif story.expired:
                 missed_stories.append(serializer.data)
             else:
                 new_stories.append(serializer.data)
@@ -188,7 +188,7 @@ class ConfirmStoryView(APIView):
             return Response({"error": "You have already read this story"}, status=status.HTTP_400_BAD_REQUEST)
 
         # ⛔️ Check if story is older than 1 day
-        if timezone.now() - story.created_at > timedelta(days=1):
+        if story.expired:
             return Response(
                 {"error": "This story has expired and can no longer be confirmed"},
                 status=status.HTTP_400_BAD_REQUEST
