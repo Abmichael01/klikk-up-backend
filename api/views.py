@@ -225,6 +225,7 @@ class RoadmapView(APIView):
                 {"title": "Social quest", "completed": True},
                 {"title": "Stories task", "completed": True},
                 {"title": "Daily rewards", "completed": True},
+                {"title": "Conversion of points to Naira", "completed": False},
                 {"title": "1000 activation", "completed": False},
                 {"title": "Referral bonus withdrawal", "completed": False},
                 {"title": "100k monthly referral bonus begins", "completed": False},
