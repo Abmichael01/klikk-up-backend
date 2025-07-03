@@ -227,7 +227,7 @@ class RoadmapView(APIView):
                 {"title": "Social quest", "completed": True},
                 {"title": "Stories task", "completed": True},
                 {"title": "Daily rewards", "completed": True},
-                {"title": "Conversion of points to Naira", "completed": False},
+                {"title": "Conversion of points to Naira", "completed": True},
                 {"title": "1000 activation", "completed": False},
                 {"title": "Referral bonus withdrawal", "completed": False},
                 {"title": "100k monthly referral bonus begins", "completed": False},
@@ -358,9 +358,9 @@ class ConvertPointsView(APIView):
         amount = int(request.data.get("amount", 0))
         point_balance = getattr(user, "point_balance", 0)
 
-        if amount < 10000:
+        if amount < 5000:
             return Response(
-            {"error": "Amount must be at least 10,000 points."},
+            {"error": "Amount must be at least 5,000 points."},
             status=status.HTTP_400_BAD_REQUEST
             )
         if amount > point_balance:
