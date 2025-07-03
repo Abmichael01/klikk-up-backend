@@ -17,5 +17,6 @@ urlpatterns = [
     path('announcements-list/', AnnouncementListView.as_view(), name='announcement-list'),
     path('giveaways/active/', ActiveGiveawayDetailView.as_view(), name='active-giveaways'),
     path('giveaways/participate/', ParticipateInGiveawayView.as_view(), name='giveaway-participate'),
+    path('users/convert-points/', ConvertPointsView.as_view(), name='convert-points'),
 ]
 

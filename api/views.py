@@ -1,3 +1,4 @@
+from decimal import Decimal
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView, ListAPIView
@@ -6,6 +7,7 @@ from rest_framework import status, permissions
 from django.contrib.auth import get_user_model
 
 from api.checkin_service import perform_daily_checkin
+from wallets.services import credit_wallet
 from .serializers import RecentActivitiesSerializer, ReferralsDataSerializer
 from .serializers import *
 from admin_panel.models import *
@@ -347,4 +349,36 @@ class ParticipateInGiveawayView(APIView):
 
         serializer = GiveawayParticipationSerializer(participation)
         return Response({"detail": "Successfully entered the giveaway!", "data": serializer.data}, status=status.HTTP_201_CREATED)
-    
+
+class ConvertPointsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        amount = int(request.data.get("amount", 0))
+        point_balance = getattr(user, "point_balance", 0)
+
+        if amount < 10000:
+            return Response(
+            {"error": "Amount must be at least 10,000 points."},
+            status=status.HTTP_400_BAD_REQUEST
+            )
+        if amount > point_balance:
+            return Response(
+            {"error": "Amount cannot be more than your point balance."},
+            status=status.HTTP_400_BAD_REQUEST
+            )
+
+        naira_value = Decimal((amount // 10000) * 1000)
+        
+        credit_wallet(
+            user,
+            naira_value,
+            f"Converted {amount} points to Naira"
+        )
+        user.point_balance -= amount
+        user.save()
+        
+        return Response({
+            "naira_equivalent": naira_value
+        }, status=status.HTTP_200_OK)
