@@ -71,7 +71,7 @@ class UserCreateSerializer(DjoserUserCreateSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email", "is_admin", "is_staff", "is_superuser"]
+        fields = ["username", "is_partner", "email", "is_admin", "is_staff", "is_superuser" ]
         read_only_fields = ["id"]
 
     def validate(self, attrs):
