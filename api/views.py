@@ -31,7 +31,7 @@ class UserReferralsView(RetrieveAPIView):
     serializer_class = ReferralsDataSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
+    def get_object(self): # type: ignore
         return self.request.user
 
 class TasksView(APIView):

@@ -99,7 +99,7 @@ class GiveawayAdminSerializer(serializers.ModelSerializer):
             winner=True
         ).select_related('user')
         return [
-            {'username': participation.user.username, 'id': participation.user.id}
+            {'username': participation.user.username, 'id': participation.user.id} # type: ignore
             for participation in winners
         ]
         

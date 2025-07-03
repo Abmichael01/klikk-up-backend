@@ -5,7 +5,6 @@ from admin_panel.models import Coupon, Activity, DailyCheckIn
 from django.utils import timezone
 from django.db.models import Sum, Case, When, F
 from _utils import format_time_since
-from django.template.defaultfilters import timesince
 from datetime import timedelta
 
 

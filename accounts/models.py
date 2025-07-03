@@ -79,7 +79,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def total_referral_points(self, points_per_referral=100):
         """Calculate total points from referrals."""
-        return self.referrals.count() * points_per_referral
+        return self.referrals.count() * points_per_referral # type: ignore
 
     def calculate_level(self):
         """Calculate level dynamically based on XP."""
