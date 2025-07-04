@@ -2,7 +2,9 @@ from decimal import Decimal
 from uuid import uuid4
 from django.db import transaction as db_transaction
 from .models import Wallet, Transaction
-from .emails import send_transaction_receipt_email
+from .emails import send_transaction_receipt_email, send_withdrawal_request_email
+from .models import WithdrawalRequest
+from django.utils import timezone
 
 def get_or_create_wallet(user):
     wallet, _ = Wallet.objects.get_or_create(user=user)
@@ -57,13 +59,62 @@ def debit_wallet(user, amount: Decimal, reference: str, description="Wallet debi
         reference=reference,
     )
 
-    send_transaction_receipt_email(
+    return wallet
+
+def request_withdrawal(user, amount: Decimal):
+    wallet = get_or_create_wallet(user)
+    if wallet.balance < amount:
+        raise ValueError("Insufficient balance for withdrawal.")
+
+    reference = f"WDR-{uuid4().hex[:12].upper()}"
+
+    # Debit now with status=PENDING
+    debit_wallet(user, amount, reference=reference, status=Transaction.TransactionStatus.PENDING)
+
+    withdrawal = WithdrawalRequest.objects.create(
         user=user,
         amount=amount,
         reference=reference,
-        description=description,
-        transaction_type="debit",
-        balance=wallet.balance
+    )
+    
+    send_withdrawal_request_email(user, amount, reference)
+
+    return withdrawal
+
+
+def approve_withdrawal(withdrawal: WithdrawalRequest, admin_note="Processed manually"):
+    if withdrawal.status != WithdrawalRequest.Status.PENDING:
+        raise ValueError("Only pending withdrawals can be approved.")
+
+    withdrawal.status = WithdrawalRequest.Status.APPROVED
+    withdrawal.processed_at = timezone.now()
+    withdrawal.admin_note = admin_note
+    withdrawal.save()
+
+    # Update transaction to SUCCESS
+    Transaction.objects.filter(reference=withdrawal.reference).update(status=Transaction.TransactionStatus.SUCCESS)
+    
+    send_transaction_receipt_email(
+        user=withdrawal.user,
+        amount=withdrawal.amount,
+        reference=withdrawal.reference,
+        description="Withdrawal approved",
+        transaction_type="withdrawal",
+        balance=withdrawal.user.wallet.balance if hasattr(withdrawal.user, 'wallet') else Decimal('0.00')
     )
 
-    return wallet
+
+def reject_withdrawal(withdrawal: WithdrawalRequest, reason="Not eligible"):
+    if withdrawal.status != WithdrawalRequest.Status.PENDING:
+        raise ValueError("Only pending withdrawals can be rejected.")
+
+    # Refund user
+    credit_wallet(withdrawal.user, withdrawal.amount, description="Withdrawal refund")
+
+    withdrawal.status = WithdrawalRequest.Status.REJECTED
+    withdrawal.processed_at = timezone.now()
+    withdrawal.admin_note = reason
+    withdrawal.save()
+
+    Transaction.objects.filter(reference=withdrawal.reference).update(status=Transaction.TransactionStatus.FAILED)
+

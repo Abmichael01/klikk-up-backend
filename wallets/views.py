@@ -14,7 +14,7 @@ import random
 import string
 from admin_panel.models import Coupon
 from api.utils import generate_coupon_code
-from .services import debit_wallet, get_or_create_wallet  # your existing util
+from .services import debit_wallet, get_or_create_wallet, request_withdrawal  # your existing util
 import uuid
 from decimal import Decimal
 from django.db.models import Q
@@ -196,7 +196,6 @@ class PaystackWebhook(APIView):
         # Optional: Flag reversal in transaction table
         
         
-        
 class WithdrawView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -204,55 +203,41 @@ class WithdrawView(APIView):
         user = request.user
         amount = request.data.get("amount")
         otp = request.data.get("otp")
-        amount = float(amount)
-        print(request.data)
-        
-        if not otp:
-            return Response({"message": "OTP is required to confirm withdrawal."}, status=status.HTTP_400_BAD_REQUEST)
-        elif not verify_otp( f"otp:{user.email}", otp):
-            return Response({"message": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Validate OTP
+        if not otp:
+            return Response({"message": "OTP is required to confirm withdrawal."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        elif not verify_otp(f"otp:{user.email}", otp):
+            return Response({"message": "Invalid or expired OTP."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate amount
         if not amount:
             return Response({"message": "Amount is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            amount = Decimal(amount)
+            amount = Decimal(str(amount))
         except:
-            return Response({"message": "Invalid amount."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Invalid amount format."}, status=status.HTTP_400_BAD_REQUEST)
 
-
+        # Check bank details
         wallet = get_or_create_wallet(user)
-
-        # Ensure user has filled bank details
         if not all([wallet.bank_code, wallet.account_number, wallet.account_name]):
             return Response({"message": "Bank details are incomplete. Please set up your bank information."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        transfer = Transfer()
-
         try:
-            recipient_code = transfer.create_recipient(
-                name=wallet.account_name,
-                account_number=wallet.account_number,
-                bank_code=wallet.bank_code
-            )
-
-            transfer_response = transfer.initiate_transfer(
-                user=user,
-                amount=amount,
-                recipient_code=recipient_code,
-                reason="User wallet withdrawal"
-            )
-            
-            print(transfer_response)
+            # Create withdrawal request (and debit immediately with status=PENDING)
+            withdrawal = request_withdrawal(user, amount)
 
             return Response({
-                "message": "Withdrawal initiated successfully",
-                "reference": transfer_response.get("reference"),
-                "paystack_transfer_code": transfer_response.get("transfer_code"),
-            }, status=status.HTTP_200_OK)
+                "message": "Withdrawal request submitted successfully.",
+                "reference": withdrawal.reference,
+                "status": withdrawal.status,
+            }, status=status.HTTP_201_CREATED)
 
+        except ValueError as ve:
+            return Response({"message": str(ve)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({
-                "message": str(e)
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

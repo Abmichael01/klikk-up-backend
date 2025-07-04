@@ -17,8 +17,6 @@ class Base64ImageField(serializers.ImageField):
         return super().to_internal_value(data)
 
 class CouponSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
     class Meta:
         model = Coupon
         fields = ["id", "code", "used", "sold", "user"]

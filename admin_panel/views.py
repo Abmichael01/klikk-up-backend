@@ -15,7 +15,7 @@ def generate_coupon_code(length=6):
     characters = string.ascii_uppercase + string.digits  # A-Z and 0-9
     return ''.join(secrets.choice(characters) for _ in range(length))
 
-class CouponView(generics.ListCreateAPIView):
+class CouponView(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     queryset = Coupon.objects.all()
     serializer_class = CouponSerializer

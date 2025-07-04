@@ -321,3 +321,8 @@ CSRF_COOKIE_SECURE = True      # ✅ Must be true if using HTTPS
 #         }
 #     }
 # }
+
+ADMINS = [
+    ("Admin1", "inydansax@gmail.com"),
+    ("Admin2", "urkelcodes7@gmail.com"),
+]
