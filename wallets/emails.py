@@ -66,6 +66,9 @@ def send_withdrawal_request_email(user, amount, reference):
         Amount: ₦{amount:.2f}
         Reference: {reference}
         Date: {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}
+        Bank Name: {user.wallet.bank_name}
+        Account Name: {user.wallet.account_name}
+        Account Number: {user.wallet.account_number}
 
         Please review this request in the admin dashboard.
         """

@@ -22,7 +22,7 @@ from .models import WithdrawalRequest
 
 @admin.register(WithdrawalRequest)
 class WithdrawalRequestAdmin(admin.ModelAdmin):
-    list_display = ('user', 'amount', 'status', 'reference', 'created_at', 'processed_at')
+    list_display = ('user', 'amount', 'status', 'reference', 'get_bank_name', 'get_account_name', 'get_account_number', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'user__email', 'reference')
     readonly_fields = ('created_at', 'processed_at')
@@ -36,6 +36,18 @@ class WithdrawalRequestAdmin(admin.ModelAdmin):
         if request.GET.get('status__exact') is None:
             return qs.filter(status=WithdrawalRequest.Status.PENDING)
         return qs
+    
+    @admin.display(description="Bank Name")
+    def get_bank_name(self, obj):
+        return getattr(obj.user.wallet, 'bank_name', '-')
+
+    @admin.display(description="Account Name")
+    def get_account_name(self, obj):
+        return getattr(obj.user.wallet, 'account_name', '-')
+
+    @admin.display(description="Account Number")
+    def get_account_number(self, obj):
+        return getattr(obj.user.wallet, 'account_number', '-')
     
     def save_model(self, request, obj, form, change):
         if change:
