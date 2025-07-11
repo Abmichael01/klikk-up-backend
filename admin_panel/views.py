@@ -19,32 +19,21 @@ class CouponView(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     queryset = Coupon.objects.all()
     serializer_class = CouponSerializer
-
     def create(self, request, *args, **kwargs):
-        amount = request.data.get('amount', 1)
-
-        try:
-            amount = int(amount)
-        except ValueError:
-            return Response({"error": "Invalid amount value"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if amount < 1:
-            return Response({"error": "Amount must be at least 1"}, status=status.HTTP_400_BAD_REQUEST)
-
-        created_coupons = []
-        for _ in range(amount):
+        # Generate a unique coupon code
+        code = generate_coupon_code()
+        while Coupon.objects.filter(code=code).exists():
             code = generate_coupon_code()
 
-            # Check if the coupon code already exists
-            while Coupon.objects.filter(code=code).exists():
-                code = generate_coupon_code()  # Regenerate if it already exists
+        # Create and save the coupon
+        coupon = Coupon.objects.create(code=code, sold=True)
 
-            # Create the coupon
-            coupon = Coupon.objects.create(code=code)
-            created_coupons.append(coupon)
-
-        serializer = self.get_serializer(created_coupons, many=True)
-        return Response({"data": serializer.data, "message": "Coupons created successfully"}, status=status.HTTP_201_CREATED)
+        # Serialize and return
+        serializer = self.get_serializer(coupon)
+        return Response(
+            {"data": serializer.data, "message": "Coupon created successfully"},
+            status=status.HTTP_201_CREATED
+        )
     
 class TaskListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAdminUser]
