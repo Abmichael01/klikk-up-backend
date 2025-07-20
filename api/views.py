@@ -1,4 +1,4 @@
-from decimal import Decimal
+ifrom decimal import Decimal
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView, ListAPIView
@@ -227,28 +227,22 @@ class RoadmapView(APIView):
                 {"title": "Social quest", "completed": True},
                 {"title": "Stories task", "completed": True},
                 {"title": "Daily rewards", "completed": True},
-                {"title": "Conversion of points to Naira", "completed": True},
                 {"title": "1000 activation", "completed": False},
                 {"title": "Referral bonus withdrawal", "completed": False},
-                {"title": "100k monthly referral bonus begins", "completed": False},
-                {"title": "5000 activation", "completed": False},
+                
+                {"title": "2000 activation", "completed": False},
                 {"title": "Giveaway", "completed": False},
+                {"title": "5,000 activation", "completed": False},
                 {"title": "10,000 activation", "completed": False},
-                {"title": "YouTube task begins", "completed": False},
-                {"title": "50,000 activation", "completed": False},
                 {"title": "Giveaway", "completed": False},
+                {"title": "50,000 activation", "completed": False},
                 {"title": "100,000 activation", "completed": False},
-                {"title": "200,000 activation", "completed": False},
-                {"title": "500,000 activation", "completed": False},
-                {"title": "End of 100k monthly referral bonus", "completed": False},
-                {"title": "500M Naira giveaway", "completed": False},
-                {"title": "1,000,000 activation", "completed": False},
                 {"title": "Game development", "completed": False},
                 {"title": "Integrating backend services", "completed": False},
                 {"title": "Launching and promotion", "completed": False},
                 {"title": "Project announcement", "completed": False},
                 {"title": "End of KLIKK UP quest", "completed": False},
-                {"title": "Conversion of points to coins", "completed": False},
+                {"title": "Conversion of points to Naira/coin", "completed": False},
                 {"title": "Snapshot", "completed": False},
                 {"title": "Community activity", "completed": False},
                 {"title": "Post-launch scaling", "completed": False},
