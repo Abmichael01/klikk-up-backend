@@ -354,31 +354,37 @@ class ConvertPointsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        user = request.user
-        amount = int(request.data.get("amount", 0))
-        point_balance = getattr(user, "point_balance", 0)
-
-        if amount < 5000:
-            return Response(
-            {"error": "Amount must be at least 5,000 points."},
-            status=status.HTTP_400_BAD_REQUEST
-            )
-        if amount > point_balance:
-            return Response(
-            {"error": "Amount cannot be more than your point balance."},
-            status=status.HTTP_400_BAD_REQUEST
-            )
-
-        naira_value = Decimal((amount // 10000) * 1000)
-        
-        credit_wallet(
-            user,
-            naira_value,
-            f"Converted {amount} points to Naira"
+        return Response(
+            {"error": "Point conversion is temporarily disabled."},
+            status=status.HTTP_403_FORBIDDEN
         )
-        user.point_balance -= amount
-        user.save()
-        
-        return Response({
-            "naira_equivalent": naira_value
-        }, status=status.HTTP_200_OK)
+
+        # --- Disabled logic below ---
+        # user = request.user
+        # amount = int(request.data.get("amount", 0))
+        # point_balance = getattr(user, "point_balance", 0)
+        #
+        # if amount < 5000:
+        #     return Response(
+        #     {"error": "Amount must be at least 5,000 points."},
+        #     status=status.HTTP_400_BAD_REQUEST
+        #     )
+        # if amount > point_balance:
+        #     return Response(
+        #     {"error": "Amount cannot be more than your point balance."},
+        #     status=status.HTTP_400_BAD_REQUEST
+        #     )
+        #
+        # naira_value = Decimal((amount // 10000) * 1000)
+        #
+        # credit_wallet(
+        #     user,
+        #     naira_value,
+        #     f"Converted {amount} points to Naira"
+        # )
+        # user.point_balance -= amount
+        # user.save()
+        #
+        # return Response({
+        #     "naira_equivalent": naira_value
+        # }, status=status.HTTP_200_OK)
