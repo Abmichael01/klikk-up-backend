@@ -79,9 +79,9 @@ class ConfirmTaskView(APIView):
         task_id = request.data.get("id")
         confirmation_code = request.data.get("confirmation_code")
 
-        if not task_id or not confirmation_code:
+        if not task_id:
             return Response(
-                {"error": "Task ID and confirmation code are required"},
+                {"error": "Task ID is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -104,6 +104,27 @@ class ConfirmTaskView(APIView):
             return Response(
             {"error": "This task has expired and can no longer be confirmed"},
             status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Handle tasks that don't require confirmation code
+        if task.no_code_required:
+            # Task can be confirmed without confirmation code
+            Activity.objects.create(
+                user=request.user,
+                activity_type="task",
+                task=task,
+                reward=task.reward
+            )
+            return Response(
+                {"message": "Task confirmed successfully"},
+                status=status.HTTP_200_OK
+            )
+
+        # Handle tasks that require confirmation code
+        if not confirmation_code:
+            return Response(
+                {"error": "Confirmation code is required for this task"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # ✅ Proceed to confirm only if confirmation code matches

@@ -24,6 +24,8 @@ class Task(models.Model):
     reward = models.IntegerField()
     confirmation_code = models.CharField(max_length=20, blank=True, null=True)
     estimated_time = models.FloatField(default=1)  # in minutes
+    no_wait_confirm = models.BooleanField(default=False, help_text="If True, task can be confirmed without waiting for timer")
+    no_code_required = models.BooleanField(default=False, help_text="If True, task doesn't require confirmation code")
     banner = models.ImageField(
         upload_to='task_banners/',
         storage=MediaCloudinaryStorage(),
