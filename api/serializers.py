@@ -78,7 +78,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ["id", "title", "link", "reward", "estimated_time", "no_wait_confirm", "no_code_required", "completed", "banner", "expired"]
+        fields = ["id", "title", "link", "reward", "estimated_time", "no_wait_confirm", "no_code_required", "is_riddle", "completed", "banner", "expired"]
 
     def get_completed(self, obj):
         user = self.context['request'].user

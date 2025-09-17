@@ -25,7 +25,7 @@ class TaskSerializer(serializers.ModelSerializer):
     banner = Base64ImageField(required=False)
     class Meta:
         model = Task
-        fields = ["id", "title", "link", "reward", "confirmation_code", "banner", "estimated_time", "no_wait_confirm", "no_code_required", "expired"]
+        fields = ["id", "title", "link", "reward", "confirmation_code", "banner", "estimated_time", "no_wait_confirm", "no_code_required", "is_riddle", "expired"]
         
     def create(self, validated_data):
         return super().create(validated_data)
